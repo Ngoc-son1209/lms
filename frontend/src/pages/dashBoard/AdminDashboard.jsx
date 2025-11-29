@@ -1,0 +1,44 @@
+import { useState } from "react";
+import Courses from "./DCourses";
+import Dashboard from "./Dashboard";
+import SideBar from "./SideBar";
+import Users from "./DUsers";
+
+import { authService } from "../../api/auth.service";
+
+function AdminDashboard() {
+  const [current, setCurrent] = useState("dashboard");
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAdminAuthenticated());
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const renderContent = () => {
+    switch (current) {
+      case "dashboard":
+        return <Dashboard isAuthenticated={isAuthenticated} />;
+      case "user":
+        return <Users />;
+      case "courses":
+        return <Courses />;
+      case "instructors":                // ⭐ tab mới
+        return <Instructors />;
+      default:
+        return <Dashboard isAuthenticated={isAuthenticated} />;
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen">
+      <SideBar current={current} onSelect={setCurrent} />
+
+      <section className="flex-1 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 transition-all duration-300">
+        <main className="p-8 font-poppins">
+          {renderContent()}
+        </main>
+      </section>
+    </div>
+  );
+}
+
+export default AdminDashboard;
