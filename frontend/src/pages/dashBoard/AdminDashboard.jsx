@@ -3,15 +3,13 @@ import Courses from "./DCourses";
 import Dashboard from "./Dashboard";
 import SideBar from "./SideBar";
 import Users from "./DUsers";
+import Instructors from "./DInstructors";
 
 import { authService } from "../../api/auth.service";
 
 function AdminDashboard() {
   const [current, setCurrent] = useState("dashboard");
-  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAdminAuthenticated());
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const isAuthenticated = authService.isAdminAuthenticated();
 
   const renderContent = () => {
     switch (current) {
@@ -21,7 +19,7 @@ function AdminDashboard() {
         return <Users />;
       case "courses":
         return <Courses />;
-      case "instructors":                // ⭐ tab mới
+      case "instructors":
         return <Instructors />;
       default:
         return <Dashboard isAuthenticated={isAuthenticated} />;

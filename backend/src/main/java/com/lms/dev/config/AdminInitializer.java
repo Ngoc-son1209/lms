@@ -23,18 +23,16 @@ public class AdminInitializer {
     @Value("${app.default-admin.email:admin@gmail.com}")
     private String defaultEmail;
 
-
     @Bean
     public CommandLineRunner createDefaultAdmin(UserRepository userRepository,
-                                                PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         return args -> {
             if (!userRepository.existsByRole(UserRole.ADMIN)) {
                 User admin = new User();
                 admin.setUsername(defaultUsername);
                 admin.setPassword(passwordEncoder.encode(defaultPassword));
                 admin.setEmail(defaultEmail);
-                
-
+                admin.setRole(UserRole.ADMIN);
                 admin.setEnabled(true);
 
                 userRepository.save(admin);

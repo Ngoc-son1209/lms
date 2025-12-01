@@ -8,7 +8,7 @@ export default function AdminInstructorManagement() {
   const fetchInstructors = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/admin/instructors",
+        "http://localhost:8081/api/admin/instructors",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -70,9 +70,8 @@ export default function AdminInstructorManagement() {
                   <td className="p-3">{ins.phone}</td>
                   <td className="p-3">
                     <span
-                      className={`px-3 py-1 rounded-full text-white text-sm ${
-                        ins.active ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-white text-sm ${ins.active ? "bg-green-500" : "bg-red-500"
+                        }`}
                     >
                       {ins.active ? "Active" : "Inactive"}
                     </span>

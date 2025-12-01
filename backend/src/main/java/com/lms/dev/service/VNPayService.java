@@ -1,6 +1,5 @@
 package com.lms.dev.service;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +13,20 @@ import java.util.*;
 @Service
 public class VNPayService {
 
-    @Value("${vnpay.tmnCode}")
+    @Value("${vnpay.tmnCode:}")
     private String vnp_TmnCode;
-    @Value("${vnpay.hashSecret}")
+    @Value("${vnpay.hashSecret:}")
     private String secretKey;
-    @Value("${vnpay.url}")
+    @Value("${vnpay.url:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}")
     private String vnp_Url;
-    @Value("${vnpay.returnUrl}")
+    @Value("${vnpay.returnUrl:http://localhost:8081/api/vnpay/return}")
     private String returnUrl;
 
     public String createPaymentUrl(String vnpTxnRef, double amount, String orderInfo) throws Exception {
+        if (vnp_TmnCode == null || vnp_TmnCode.isBlank() || secretKey == null || secretKey.isBlank()) {
+            throw new IllegalStateException(
+                    "VNPay is not configured. Please set vnpay.tmnCode and vnpay.hashSecret in application.yml or env variables VNPAY_TMN_CODE, VNPAY_HASH_SECRET.");
+        }
         Map<String, String> params = new HashMap<>();
         params.put("vnp_Version", "2.1.0");
         params.put("vnp_Command", "pay");
@@ -46,7 +49,8 @@ public class VNPayService {
             String fieldValue = params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 hashData.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8)).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8)).append('=')
+                        .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
                 if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
                     hashData.append('&');
                     query.append('&');
@@ -65,7 +69,8 @@ public class VNPayService {
         hmac512.init(secretKeySpec);
         byte[] bytes = hmac512.doFinal(data.getBytes());
         StringBuilder hash = new StringBuilder();
-        for (byte b : bytes) hash.append(String.format("%02x", b));
+        for (byte b : bytes)
+            hash.append(String.format("%02x", b));
         return hash.toString();
     }
 }

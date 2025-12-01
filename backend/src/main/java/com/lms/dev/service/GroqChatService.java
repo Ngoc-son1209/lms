@@ -13,12 +13,15 @@ import java.util.*;
 @Service
 public class GroqChatService {
 
-    @Value("${groq.api.key}")
+    @Value("${groq.api.key:}")
     private String groqApiKey;
 
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     public String chatWithGroq(String userMessage) {
+        if (groqApiKey == null || groqApiKey.isBlank()) {
+            return "Groq API key is not configured. Please set 'groq.api.key' in application.yml or environment variable GROQ_API_KEY.";
+        }
         RestTemplate restTemplate = new RestTemplate();
 
         // ✅ Chuẩn bị nội dung gửi đi
@@ -26,8 +29,7 @@ public class GroqChatService {
         body.put("model", "qwen/qwen3-32b");
         List<Map<String, String>> messages = List.of(
                 Map.of("role", "system", "content", "You are a helpful assistant."),
-                Map.of("role", "user", "content", userMessage)
-        );
+                Map.of("role", "user", "content", userMessage));
         body.put("messages", messages);
 
         // ✅ Header
@@ -39,8 +41,7 @@ public class GroqChatService {
 
         try {
             ResponseEntity<Map> response = restTemplate.exchange(
-                    API_URL, HttpMethod.POST, request, Map.class
-            );
+                    API_URL, HttpMethod.POST, request, Map.class);
 
             // ✅ Kiểm tra body phản hồi
             if (response.getBody() == null) {

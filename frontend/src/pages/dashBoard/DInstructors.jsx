@@ -10,7 +10,7 @@ export default function Instructors() {
 
   const fetchInstructors = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/admin/instructors", {
+      const response = await fetch("http://localhost:8081/api/admin/instructors", {
         headers: authService.getAuthHeader(),
       });
       const data = await response.json();
@@ -45,9 +45,8 @@ export default function Instructors() {
               <td className="p-3">{ins.email}</td>
               <td className="p-3">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    ins.enabled ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                  }`}
+                  className={`px-3 py-1 rounded-full text-sm ${ins.enabled ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                    }`}
                 >
                   {ins.enabled ? "Active" : "Disabled"}
                 </span>

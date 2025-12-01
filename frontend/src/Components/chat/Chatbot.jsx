@@ -14,7 +14,7 @@ function Chatbot() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/chat", {
+      const res = await fetch("http://localhost:8081/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,11 +44,10 @@ function Chatbot() {
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`p-2 rounded-lg max-w-[80%] ${
-              msg.role === "user"
+            className={`p-2 rounded-lg max-w-[80%] ${msg.role === "user"
                 ? "bg-blue-500 text-white self-end ml-auto"
                 : "bg-gray-200 text-gray-800"
-            }`}
+              }`}
           >
             {msg.content}
           </div>

@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/lms?createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    properties:
+      hibernate:
+        ddl-auto: update
+        transaction:
+          jta:
+            platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+  # CẤU HÌNH GỬI EMAIL (JavaMail)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:anhsonss1209@gmail.com}
+    password: ${EMAIL_PASSWORD:flzg qsue oqbx mheb}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  jwtSecret: ${JWT_SECRET:jZYI9gxgOz9S3swqxdK+e2juXIwLVumKni/qNT9RVK0u2XF6ow7H7HB50nBxIz2CPSsl07JV8W1DlJuRP2sLNA==}
+  jwtExpirationMs: ${JWT_EXPIRATION:86400000}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  default-admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin123}
+    email: ${ADMIN_EMAIL:admin@gmail.com}
+
+logging:
+  level:
+    com.lms.dev: ${APP_LOG_LEVEL:DEBUG}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:DEBUG}
