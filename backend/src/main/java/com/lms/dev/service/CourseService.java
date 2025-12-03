@@ -19,11 +19,19 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    public List<Course> getCoursesByInstructor(UUID instructorId) {
+        return courseRepository.findByInstructorId(instructorId);
+    }
+
     public Course getCourseById(UUID id) {
         return courseRepository.findById(id).orElse(null);
     }
 
     public Course createCourse(Course course) {
+        return courseRepository.save(course);
+    }
+
+    public Course save(Course course) {
         return courseRepository.save(course);
     }
 
@@ -34,8 +42,14 @@ public class CourseService {
             existingCourse.setDescription(updatedCourse.getDescription());
             existingCourse.setP_link(updatedCourse.getP_link());
             existingCourse.setPrice(updatedCourse.getPrice());
-            existingCourse.setInstructor(updatedCourse.getInstructor());
+            if (updatedCourse.getInstructor() != null) {
+                existingCourse.setInstructor(updatedCourse.getInstructor());
+            }
             existingCourse.setY_link(updatedCourse.getY_link());
+            // keep or update instructorId if provided (controller enforces ownership)
+            if (updatedCourse.getInstructorId() != null) {
+                existingCourse.setInstructorId(updatedCourse.getInstructorId());
+            }
             return courseRepository.save(existingCourse);
         }
         return null;

@@ -61,6 +61,11 @@ public class User {
 
     private boolean enabled = true;
 
+    // Instructor approval status (Admin must approve before login if role =
+    // INSTRUCTOR)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean approved = true;
+
     @Column(name = "verification_code", length = 64)
     @JsonIgnore
     private String verificationCode;

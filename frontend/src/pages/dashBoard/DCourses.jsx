@@ -31,7 +31,10 @@ function Courses() {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const result = await adminService.getAllCourses();
+      const role = localStorage.getItem("role");
+      const result = role === "ROLE_INSTRUCTOR"
+        ? await adminService.getMyCourses()
+        : await adminService.getAllCourses();
       if (result.success) {
         setCourses(result.data);
       } else {

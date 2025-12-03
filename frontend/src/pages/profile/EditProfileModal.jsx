@@ -15,8 +15,9 @@ import {
 import moment from 'moment';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
-const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
+const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstructor = false }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,9 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
         profession: userDetails.profession,
         linkedin_url: userDetails.linkedin_url,
         github_url: userDetails.github_url,
+        // Instructor-only fields
+        expertise: userDetails.expertise,
+        bio: userDetails.bio,
       });
     }
   }, [visible, userDetails, form]);
@@ -45,7 +49,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
       };
 
       const success = await onUpdate(formattedValues);
-      
+
       if (success) {
         message.success('Profile updated successfully!');
         onCancel();
@@ -62,7 +66,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
 
   const validateURL = (_, value) => {
     if (!value) return Promise.resolve();
-    
+
     try {
       new URL(value);
       return Promise.resolve();
@@ -91,6 +95,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
         onFinish={handleSubmit}
         style={{ marginTop: '16px' }}
       >
+        {/* Basic Information */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="username"
@@ -188,6 +193,39 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
           />
         </Form.Item>
 
+        {/* Instructor-only section */}
+        {isInstructor && (
+          <div style={{
+            border: '1px solid #eef2ff',
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 16,
+            background: '#fafbff'
+          }}>
+            <div style={{ fontWeight: 600, color: '#4338ca', marginBottom: 12 }}>Instructor Profile</div>
+
+            <Form.Item
+              name="expertise"
+              label="Expertise"
+              rules={[{ required: true, message: 'Please enter your expertise!' }]}
+            >
+              <Input
+                prefix={<FontAwesomeIcon icon={faBriefcase} style={{ color: '#9ca3af' }} />}
+                placeholder="e.g. Java, Spring Boot, Microservices"
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="bio"
+              label="Bio"
+              rules={[{ min: 20, message: 'Bio should be at least 20 characters!' }]}
+            >
+              <TextArea rows={4} placeholder="Introduce yourself, experience, achievements..." />
+            </Form.Item>
+          </div>
+        )}
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="linkedin_url"
@@ -231,7 +269,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate }) => {
             htmlType="submit"
             loading={loading}
             size="large"
-            style={{ 
+            style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               border: 'none',
               minWidth: '140px'

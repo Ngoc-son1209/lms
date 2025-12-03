@@ -3,6 +3,7 @@ package com.lms.dev.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.lms.dev.dto.EnrollRequest;
+import com.lms.dev.dto.StudentDTO;
 import com.lms.dev.entity.Course;
 import com.lms.dev.entity.Learning;
 import com.lms.dev.entity.Progress;
@@ -12,6 +13,7 @@ import com.lms.dev.repository.LearningRepository;
 import com.lms.dev.repository.ProgressRepository;
 import com.lms.dev.repository.UserRepository;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,12 +24,12 @@ public class LearningService {
     private final UserRepository userRepository;
 
     private final CourseRepository courseRepository;
-    
+
     private final ProgressRepository progressRepository;
 
     public List<Course> getLearningCourses(UUID userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        
+
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             List<Course> learningCourses = new ArrayList<>();
@@ -42,9 +44,9 @@ public class LearningService {
 
         return null;
     }
-    
+
     public List<Learning> getEnrollments() {
-    	return learningRepository.findAll();
+        return learningRepository.findAll();
     }
 
     public String enrollCourse(EnrollRequest enrollRequest) {
@@ -73,9 +75,21 @@ public class LearningService {
         return "Failed to enroll";
     }
 
-
     public void unenrollCourse(UUID id) {
         learningRepository.deleteById(id);
     }
-}
 
+    // New: list students by course
+    public List<StudentDTO> getStudentsByCourse(UUID courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null)
+            return Collections.emptyList();
+        List<Learning> records = learningRepository.findByCourse(course);
+        return records.stream()
+                .map(l -> {
+                    User u = l.getUser();
+                    return new StudentDTO(u.getId(), u.getUsername(), u.getEmail(), u.getMobileNumber());
+                })
+                .collect(Collectors.toList());
+    }
+}

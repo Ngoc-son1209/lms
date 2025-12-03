@@ -47,9 +47,31 @@ async function uploadProfileImage(userId, file) {
   }
 }
 
+async function getInstructorProfile() {
+  try {
+    const { data } = await api.get(`/api/instructors/me`);
+    return { success: true, data };
+  } catch (err) {
+    console.error("Error fetching instructor profile:", err);
+    return { success: false, error: "Unable to fetch instructor profile" };
+  }
+}
+
+async function updateInstructorProfile(updatedData) {
+  try {
+    const { data } = await api.put(`/api/instructors/me`, updatedData);
+    return { success: true, data };
+  } catch (err) {
+    console.error("Error updating instructor profile:", err);
+    return { success: false, error: "Unable to update instructor profile" };
+  }
+}
+
 export const profileService = {
   getUserDetails,
   getProfileImage,
   uploadProfileImage,
   updateUser,
+  getInstructorProfile,
+  updateInstructorProfile,
 };

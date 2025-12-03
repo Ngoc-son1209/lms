@@ -1,6 +1,7 @@
-import { Modal, Form, Input, InputNumber, message } from "antd";
+import { Modal, Form, Input, InputNumber, message, Select, Spin } from "antd";
 import { useState, useEffect } from "react";
 import { adminService } from "../../api/admin.service";
+import { authService } from "../../api/auth.service";
 
 const { TextArea } = Input;
 
@@ -8,18 +9,39 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
+  const [instructors, setInstructors] = useState([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(false);
 
   const isEditMode = mode === "edit" || courseId !== null;
+  const currentUser = authService.getCurrentUser();
+  const isInstructorRole = currentUser?.role === "ROLE_INSTRUCTOR";
+  const isAdminRole = currentUser?.role === "ROLE_ADMIN";
   const modalTitle = isEditMode ? "Edit Course" : "Add New Course";
   const submitButtonText = isEditMode ? "Update Course" : "Add Course";
   const loadingText = isEditMode ? "Updating..." : "Adding...";
 
   useEffect(() => {
-    if (isOpen && isEditMode && courseId) {
-      fetchCourseData();
-    } else if (isOpen && !isEditMode) {
-      form.resetFields();
-    }
+    const init = async () => {
+      if (isOpen && isAdminRole) {
+        setLoadingInstructors(true);
+        try {
+          const res = await adminService.getApprovedInstructors();
+          if (res.success) setInstructors(res.data || []);
+        } finally {
+          setLoadingInstructors(false);
+        }
+      }
+      if (isOpen && isEditMode && courseId) {
+        fetchCourseData();
+      } else if (isOpen && !isEditMode) {
+        form.resetFields();
+        // If instructor, prefill instructor name (fallback to email)
+        if (isInstructorRole && (currentUser?.name || currentUser?.email)) {
+          form.setFieldsValue({ instructor: currentUser.name || currentUser.email });
+        }
+      }
+    };
+    init();
   }, [isOpen, courseId, isEditMode]);
 
   const fetchCourseData = async () => {
@@ -30,6 +52,7 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
         const formData = {
           course_name: result.data.course_name,
           instructor: result.data.instructor,
+          instructorId: result.data.instructorId,
           price: result.data.price,
           description: result.data.description,
           y_link: result.data.y_link,
@@ -56,21 +79,36 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
         const editData = {
           course_name: values.course_name,
           instructor: values.instructor,
+          instructorId: values.instructorId,
           price: values.price,
           description: values.description,
           y_link: values.y_link,
           p_link: values.p_link,
         };
+        // For admin, ensure display instructor name is set from selection
+        if (isAdminRole && values.instructorId) {
+          const picked = (instructors || []).find((i) => i.userId === values.instructorId);
+          if (picked) editData.instructor = picked.fullName || picked.email;
+        }
         result = await adminService.updateCourse(courseId, editData);
       } else {
         const addData = {
           course_name: values.course_name,
           instructor: values.instructor,
+          instructorId: values.instructorId,
           price: values.price,
           description: values.description,
           y_link: values.y_link,
           p_link: values.p_link,
         };
+        // Set display name based on role
+        if (isInstructorRole && (currentUser?.name || currentUser?.email)) {
+          addData.instructor = currentUser.name || currentUser.email;
+        }
+        if (isAdminRole && values.instructorId) {
+          const picked = (instructors || []).find((i) => i.userId === values.instructorId);
+          if (picked) addData.instructor = picked.fullName || picked.email;
+        }
         result = await adminService.createCourse(addData);
       }
 
@@ -118,6 +156,7 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
           initialValues={{
             course_name: "",
             instructor: "",
+            instructorId: undefined,
             price: 0,
             description: "",
             y_link: "",
@@ -136,16 +175,33 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
             <Input placeholder="Enter course name" />
           </Form.Item>
 
-          <Form.Item
-            label="Instructor"
-            name="instructor"
-            rules={[
-              { required: true, message: "Instructor is required" },
-              { min: 2, message: "Instructor name must be at least 2 characters" },
-            ]}
-          >
-            <Input placeholder="Enter instructor name" />
-          </Form.Item>
+          {/* Admin can assign an instructor */}
+          {isAdminRole && (
+            <Form.Item
+              label="Instructor"
+              name="instructorId"
+              rules={[{ required: true, message: "Please select an instructor" }]}
+            >
+              <Select
+                placeholder="Select instructor"
+                loading={loadingInstructors}
+                options={(instructors || []).map((ins) => ({
+                  value: ins.userId,
+                  label: `${ins.fullName || ins.email} - ${ins.email}`,
+                }))}
+                showSearch
+                optionFilterProp="label"
+                onChange={(val) => {
+                  const picked = (instructors || []).find((i) => i.userId === val);
+                  if (picked) {
+                    form.setFieldsValue({ instructor: picked.fullName || picked.email });
+                  }
+                }}
+              />
+            </Form.Item>
+          )}
+
+
 
           <Form.Item
             label="Price"

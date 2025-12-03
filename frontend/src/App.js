@@ -1,10 +1,10 @@
 import './App.css';
-import {BrowserRouter , Routes , Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/auth/login';
 import Register from './pages/auth/register';
 // Import các component auth
-import ForgotPassword from './pages/auth/ForgotPassword'; 
-import ResetPassword from './pages/auth/ResetPassword'; 
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import Course from './pages/course/course';
 import Courses from './pages/course/Courses';
 import Profile from './pages/profile/profile';
@@ -20,13 +20,17 @@ import certificate from './pages/assessment/certificate';
 import Forum from './pages/course/forum';
 import AdminDashboard from './pages/dashBoard/AdminDashboard';
 // Import các Component mới cho quản lý nội dung
-import InstructorDashboard from './pages/instructor/InstructorDashboard'; 
-import ManageCourseContent from './pages/instructor/ManageCourseContent'; 
-import AdminInstructorManagement from './pages/dashBoard/AdminInstructorManagement'; 
+import InstructorDashboard from './pages/instructor/InstructorDashboard';
+import ManageCourseContent from './pages/instructor/ManageCourseContent';
+import AdminInstructorManagement from './pages/dashBoard/AdminInstructorManagement';
+// Instructor management pages
+import InstructorCourses from './pages/instructor/InstructorCourses';
+import InstructorQuestions from './pages/instructor/InstructorQuestions';
+import InstructorStudents from './pages/instructor/InstructorStudents';
+import InstructorFeedback from './pages/instructor/InstructorFeedback';
 
 // Import các component bảo vệ Route
-import { AdminRoute, UserRoute } from "./Components/common/ProtectedRoute";
-import { InstructorRoute } from "./Components/common/InstructorRoute"; // Cần phải tạo file này
+import { AdminRoute, UserRoute, InstructorRoute } from "./Components/common/ProtectedRoute";
 
 function App() {
   return (
@@ -36,7 +40,7 @@ function App() {
           {/* ======================= Authentication Routes ======================= */}
           <Route path='/login' Component={Login}></Route>
           <Route path='/register' Component={Register}></Route>
-          <Route path='/forgot-password' Component={ForgotPassword}></Route> 
+          <Route path='/forgot-password' Component={ForgotPassword}></Route>
           <Route path='/reset-password' Component={ResetPassword}></Route>
 
           {/* ======================= Public & User Routes ======================= */}
@@ -70,7 +74,40 @@ function App() {
               </InstructorRoute>
             }
           />
-          
+          {/* Instructor management pages */}
+          <Route
+            path="/instructor/courses"
+            element={
+              <InstructorRoute>
+                <InstructorCourses />
+              </InstructorRoute>
+            }
+          />
+          <Route
+            path="/instructor/questions"
+            element={
+              <InstructorRoute>
+                <InstructorQuestions />
+              </InstructorRoute>
+            }
+          />
+          <Route
+            path="/instructor/students"
+            element={
+              <InstructorRoute>
+                <InstructorStudents />
+              </InstructorRoute>
+            }
+          />
+          <Route
+            path="/instructor/feedback"
+            element={
+              <InstructorRoute>
+                <InstructorFeedback />
+              </InstructorRoute>
+            }
+          />
+
           {/* ======================= ADMIN Routes (Mới & Cũ) ======================= */}
           {/* Cần đảm bảo AdminDashboard chỉ render 1 lần duy nhất */}
           <Route
@@ -84,12 +121,12 @@ function App() {
           {/* Quản lý Users và Courses (DUsers và DCourses cũ của bạn) */}
           <Route path='/Dcourses' element={<AdminRoute><DCourses /></AdminRoute>}></Route>
           <Route path='/Dusers' element={<AdminRoute><DUsers /></AdminRoute>}></Route>
-          
+
           {/* Admin Quản lý Instructors (Mới) */}
           <Route path='/admin/instructors' element={<AdminRoute><AdminInstructorManagement /></AdminRoute>}></Route>
-          
+
           {/* Admin AddQuestions (Dường như là một phần của Dashboard) */}
-          <Route path="/addquestions/:id" element={<AdminRoute><AddQuestions/></AdminRoute>}/>
+          <Route path="/addquestions/:id" element={<AdminRoute><AddQuestions /></AdminRoute>} />
 
           {/* ======================= Error Route ======================= */}
           <Route path='*' Component={ErrorPage}></Route>

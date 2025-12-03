@@ -164,6 +164,10 @@ function isUserAuthenticated() {
   return !!localStorage.getItem("token") && localStorage.getItem("role") === "ROLE_USER";
 }
 
+function isInstructorAuthenticated() {
+  return !!localStorage.getItem("token") && localStorage.getItem("role") === "ROLE_INSTRUCTOR";
+}
+
 function getCurrentUser() {
   return {
     token: localStorage.getItem("token"),
@@ -182,74 +186,74 @@ function getAuthHeader() {
 
 
 async function forgotPassword(email) {
-  try {
-    // Backend đang sử dụng @RequestParam, nên dùng query string
-    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password?email=${encodeURIComponent(email)}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  try {
+    // Backend đang sử dụng @RequestParam, nên dùng query string
+    const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password?email=${encodeURIComponent(email)}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    const result = await response.json();
+    const result = await response.json();
 
-    // Dù response.ok là true hay false, ta vẫn trả về thông báo chung
-    // vì logic BE đã được thiết lập để trả về 200 OK ngay cả khi email không tồn tại (bảo mật)
-    if (response.ok || response.status === 400 || response.status === 404) {
-      return {
-        success: true,
-        message: result.message || "Nếu email tồn tại, bạn sẽ nhận được link reset password",
-      };
-    } else {
-      return {
-        success: false,
-        error: result.message || "Lỗi server, vui lòng thử lại",
-      };
-    }
-  } catch (error) {
-    console.error("Forgot Password error:", error);
-    return {
-      success: false,
-      error: "Lỗi mạng. Vui lòng thử lại.",
-    };
-  }
+    // Dù response.ok là true hay false, ta vẫn trả về thông báo chung
+    // vì logic BE đã được thiết lập để trả về 200 OK ngay cả khi email không tồn tại (bảo mật)
+    if (response.ok || response.status === 400 || response.status === 404) {
+      return {
+        success: true,
+        message: result.message || "Nếu email tồn tại, bạn sẽ nhận được link reset password",
+      };
+    } else {
+      return {
+        success: false,
+        error: result.message || "Lỗi server, vui lòng thử lại",
+      };
+    }
+  } catch (error) {
+    console.error("Forgot Password error:", error);
+    return {
+      success: false,
+      error: "Lỗi mạng. Vui lòng thử lại.",
+    };
+  }
 }
 
 
 
 async function resetPassword(token, newPassword) {
-  try {
-    // Backend đang sử dụng @RequestParam, nên dùng query string
-    const response = await fetch(
-      `${API_BASE_URL}/api/auth/reset-password?token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(newPassword)}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  try {
+    // Backend đang sử dụng @RequestParam, nên dùng query string
+    const response = await fetch(
+      `${API_BASE_URL}/api/auth/reset-password?token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(newPassword)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const result = await response.json();
+    const result = await response.json();
 
-    if (response.ok) {
-      return {
-        success: true,
-        message: result.message || "Mật khẩu đã được đặt lại thành công.",
-      };
-    } else {
-      return {
-        success: false,
-        error: result.message || "Link reset password không hợp lệ hoặc đã hết hạn.",
-      };
-    }
-  } catch (error) {
-    console.error("Reset Password error:", error);
-    return {
-      success: false,
-      error: "Lỗi mạng. Vui lòng thử lại.",
-    };
-  }
+    if (response.ok) {
+      return {
+        success: true,
+        message: result.message || "Mật khẩu đã được đặt lại thành công.",
+      };
+    } else {
+      return {
+        success: false,
+        error: result.message || "Link reset password không hợp lệ hoặc đã hết hạn.",
+      };
+    }
+  } catch (error) {
+    console.error("Reset Password error:", error);
+    return {
+      success: false,
+      error: "Lỗi mạng. Vui lòng thử lại.",
+    };
+  }
 }
 
 export const authService = {
@@ -259,8 +263,9 @@ export const authService = {
   logout,
   isAdminAuthenticated,
   isUserAuthenticated,
+  isInstructorAuthenticated,
   getCurrentUser,
   getAuthHeader,
   forgotPassword,
-  resetPassword,
+  resetPassword,
 };

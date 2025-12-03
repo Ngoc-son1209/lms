@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Spring Boot config (ignore sensitive) ###
+application.yml
+src/main/resources/application.yml

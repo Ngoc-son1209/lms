@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../../contexts/UserContext";
 import Navbar from "../../Components/common/Navbar";
@@ -14,6 +14,20 @@ function Login() {
 
   const navigate = useNavigate();
   const { setUser } = useUserContext();
+
+  useEffect(() => {
+    const current = authService.getCurrentUser();
+    if (current?.token) {
+      const role = current.role;
+      if (role === "ROLE_ADMIN") {
+        navigate("/admin", { replace: true });
+      } else if (role === "ROLE_INSTRUCTOR") {
+        navigate("/instructor/courses", { replace: true });
+      } else {
+        navigate("/courses", { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const login = async (e) => {
     e.preventDefault();
@@ -31,12 +45,14 @@ function Login() {
         const role = result.user?.role;
 
         if (role === "ROLE_ADMIN") {
-          navigate("/admin");
+          navigate("/admin", { replace: true });
+        } else if (role === "ROLE_INSTRUCTOR") {
+          navigate("/instructor/courses", { replace: true });
         } else {
-          navigate("/courses");
+          navigate("/courses", { replace: true });
         }
       }
-      
+
       else {
         setError(result.error || "Login failed. Please try again.");
       }

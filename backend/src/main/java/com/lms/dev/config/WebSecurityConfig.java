@@ -43,34 +43,35 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(sm -> sm.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(
+                        org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Public endpoints
-                        .requestMatchers("/api/auth/**", "/verify", "/chat", "/error").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/instructors/register", "/verify", "/chat", "/error")
+                        .permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/reset-password").permitAll()
-                        
-                         
+
                         // Courses
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/courses/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
 
                         // Assessments, Enrollments, Feedback, Learning, Progress
-                        .requestMatchers("/api/assessments/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/learning/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/progress/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/questions/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/assessments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/learning/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/progress/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/questions/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
 
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

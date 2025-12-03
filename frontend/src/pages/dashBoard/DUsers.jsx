@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { 
-  Table, 
-  Modal, 
-  Form, 
-  Input, 
-  Select, 
-  Button, 
-  Space, 
-  Avatar, 
-  Tag, 
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Table,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Button,
+  Space,
+  Avatar,
+  Tag,
   message,
   Descriptions,
   Row,
@@ -17,6 +17,7 @@ import {
 } from "antd";
 import { EyeOutlined, EditOutlined, UserOutlined } from "@ant-design/icons";
 import { adminService } from "../../api/admin.service";
+import SearchFilter from "../../Components/common/SearchFilter";
 
 const { Option } = Select;
 
@@ -28,6 +29,9 @@ function Users() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editForm] = Form.useForm();
 
+  // simple search only
+  const [filters, setFilters] = useState({ keyword: "" });
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -35,9 +39,9 @@ function Users() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await adminService.getAllUsers();
+      const res = await adminService.getStudents();
       if (res.success) {
-        setUsers(res.data);
+        setUsers(res.data || []);
       } else {
         message.error("Failed to fetch users");
       }
@@ -176,6 +180,16 @@ function Users() {
     },
   ];
 
+  const filteredUsers = useMemo(() => {
+    const kw = (filters.keyword || "").toLowerCase().trim();
+    if (!kw) return users;
+    return (users || []).filter((u) =>
+      [u.username, u.email, u.mobileNumber]
+        .filter(Boolean)
+        .some((x) => String(x).toLowerCase().includes(kw))
+    );
+  }, [users, filters]);
+
   return (
     <>
       <div className="mb-8">
@@ -187,10 +201,19 @@ function Users() {
         </p>
       </div>
 
+      <Card className="shadow-xl mb-4">
+        <SearchFilter
+          fields={[{ type: "input", name: "keyword", label: "Tên/Email/SĐT", placeholder: "Tên/Email/SĐT" }]}
+          initialValues={filters}
+          onChange={setFilters}
+          debounce={250}
+        />
+      </Card>
+
       <Card className="shadow-xl">
         <Table
           columns={columns}
-          dataSource={users}
+          dataSource={filteredUsers}
           loading={loading}
           rowKey="id"
           pagination={{
@@ -359,23 +382,24 @@ function Users() {
           </Row>
 
           <Row gutter={16}>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item label="Role" name="role">
                 <Select>
                   <Option value="USER">USER</Option>
                   <Option value="ADMIN">ADMIN</Option>
+                  <Option value="INSTRUCTOR">INSTRUCTOR</Option>
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
               <Form.Item label="Status" name="isActive">
                 <Select>
                   <Option value={true}>Active</Option>
                   <Option value={false}>Inactive</Option>
                 </Select>
               </Form.Item>
-            </Col>
-            <Col span={8}>
+            </Col> */}
+            <Col span={12}>
               <Form.Item label="Gender" name="gender">
                 <Select placeholder="Select gender">
                   <Option value="Male">Male</Option>

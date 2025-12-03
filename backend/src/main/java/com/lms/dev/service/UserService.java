@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import com.lms.dev.enums.UserRole;
 
 @RequiredArgsConstructor
 @Service
@@ -42,18 +43,22 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getUsersByRole(UserRole role) {
+        return userRepository.findByRole(role);
+    }
+
     public User getUserById(UUID id) {
         return userRepository.findById(id).orElse(null);
     }
 
     public void createUser(User user, String siteURL)
-        throws UnsupportedEncodingException, MessagingException {
+            throws UnsupportedEncodingException, MessagingException {
 
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException("Email này đã được sử dụng");
         }
         if (user.getMobileNumber() != null && !user.getMobileNumber().isEmpty() &&
-            userRepository.existsByMobileNumber(user.getMobileNumber())) {
+                userRepository.existsByMobileNumber(user.getMobileNumber())) {
             throw new DuplicateResourceException("Số điện thoại này đã được sử dụng");
         }
 
@@ -62,14 +67,14 @@ public class UserService {
         String randomCode = RandomStringUtils.randomAlphanumeric(64);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
-        
+
         userRepository.save(user);
-        
+
         sendVerificationEmail(user, siteURL);
     }
 
     private void sendVerificationEmail(User user, String siteURL)
-        throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "anhsonss1209@gmail.com";
         String senderName = "Ocean Edu";
@@ -79,27 +84,27 @@ public class UserService {
                 + "<p><a href=\"[[URL]]\">XÁC MINH TÀI KHOẢN</a></p>"
                 + "<br>"
                 + "<p>Cảm ơn,<br>OceanEdu Team</p>";
-        
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        
+
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
         helper.setSubject(subject);
-        
+
         content = content.replace("[[name]]", user.getUsername());
         String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
-        
+
         content = content.replace("[[URL]]", verifyURL);
-        
+
         helper.setText(content, true);
-        
+
         mailSender.send(message);
     }
 
     public boolean verify(String verificationCode) {
         User user = userRepository.findByVerificationCode(verificationCode);
-         
+
         if (user == null || user.isEnabled()) {
             return false;
         } else {
@@ -112,11 +117,11 @@ public class UserService {
 
     // # NOTE: Gửi email reset password với reset token
     public void sendPasswordResetEmail(User user, String siteURL)
-        throws MessagingException, UnsupportedEncodingException {
-        
+            throws MessagingException, UnsupportedEncodingException {
+
         // # NOTE: Tạo reset token ngẫu nhiên
         String resetToken = RandomStringUtils.randomAlphanumeric(64);
-        
+
         // # NOTE: Lưu token và thời gian hết hạn vào database
         user.setPasswordResetToken(resetToken);
         user.setPasswordResetTokenExpiry(LocalDateTime.now().plusMinutes(RESET_TOKEN_EXPIRY_MINUTES));
@@ -133,36 +138,34 @@ public class UserService {
                 + "<br>"
                 + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.</p>"
                 + "<p>Cảm ơn,<br>OceanEdu Team</p>";
-        
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        
+
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
         helper.setSubject(subject);
 
-        
-        
         content = content.replace("[[name]]", user.getUsername());
         String resetURL = frontendUrl + "/reset-password?token=" + resetToken;
         content = content.replace("[[URL]]", resetURL);
-        
+
         helper.setText(content, true);
-        
+
         mailSender.send(message);
     }
 
     // # NOTE: Xác thực reset token và cập nhật mật khẩu
     public boolean resetPassword(String token, String newPassword) {
         User user = userRepository.findByPasswordResetToken(token);
-        
+
         if (user == null) {
             return false;
         }
 
         // # NOTE: Kiểm tra token có hết hạn không
-        if (user.getPasswordResetTokenExpiry() == null || 
-            LocalDateTime.now().isAfter(user.getPasswordResetTokenExpiry())) {
+        if (user.getPasswordResetTokenExpiry() == null ||
+                LocalDateTime.now().isAfter(user.getPasswordResetTokenExpiry())) {
             return false;
         }
 
@@ -177,7 +180,8 @@ public class UserService {
 
     public void updateUserProfile(MultipartFile file, UUID id) throws IOException {
         User user = getUserById(id);
-        if (user == null) return;
+        if (user == null)
+            return;
         user.setProfileImage(file.getBytes());
         userRepository.save(user);
     }
@@ -192,20 +196,19 @@ public class UserService {
             existingUser.setGender(updatedUser.getGender());
             existingUser.setLocation(updatedUser.getLocation());
             existingUser.setProfession(updatedUser.getProfession());
-            
 
             return userRepository.save(existingUser);
         }
         return null;
     }
-    
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    
+
     public User authenticateUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email);
-        if(user != null && passwordEncoder.matches(rawPassword, user.getPassword())){
+        if (user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
             return user;
         }
         return null;

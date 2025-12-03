@@ -4,6 +4,7 @@ import com.lms.dev.dto.ApiResponse;
 import com.lms.dev.dto.JwtResponseDTO;
 import com.lms.dev.dto.LoginRequestDTO;
 import com.lms.dev.entity.User;
+import com.lms.dev.enums.UserRole;
 import com.lms.dev.exception.DuplicateResourceException;
 import com.lms.dev.security.UserPrincipal;
 import com.lms.dev.security.util.JwtUtils;
@@ -53,16 +54,23 @@ public class AuthController {
             if (!user.isEnabled()) {
                 log.warn("Login failed - Account not activated: {}", loginRequest.getEmail());
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ApiResponse<>("Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để xác thực", null));
+                        .body(new ApiResponse<>(
+                                "Tài khoản của bạn chưa được kích hoạt. Vui lòng kiểm tra email để xác thực", null));
+            }
+
+            // # NOTE: Chặn giảng viên chưa được admin duyệt
+            if (user.getRole() == UserRole.INSTRUCTOR && !user.isApproved()) {
+                log.warn("Login failed - Instructor not approved: {}", loginRequest.getEmail());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ApiResponse<>(
+                                "Tài khoản giảng viên của bạn đang chờ duyệt. Vui lòng chờ Admin phê duyệt.", null));
             }
 
             // # NOTE: Xác thực người dùng
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
+                            loginRequest.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
@@ -95,7 +103,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<User>> register(@Valid @RequestBody User signUpRequest,
-                                                      HttpServletRequest request) {
+            HttpServletRequest request) {
         try {
             log.info("Registration attempt for email: {}", signUpRequest.getEmail());
 
@@ -104,13 +112,14 @@ public class AuthController {
 
             log.info("User registered successfully: {}", signUpRequest.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponse<>("User registered successfully. Please check your email to verify your account.", null));
-                    
+                    .body(new ApiResponse<>(
+                            "User registered successfully. Please check your email to verify your account.", null));
+
         } catch (DuplicateResourceException e) {
             log.warn("Registration failed - Duplicate resource: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiResponse<>(e.getMessage(), null));
-                    
+
         } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Registration failed - Email error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -123,19 +132,21 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> forgotPassword(@RequestParam String email, HttpServletRequest request) {
         try {
             log.info("Forgot password request for email: {}", email);
-            
+
             User user = authService.getUserByEmail(email);
             if (user == null) {
                 // # NOTE: Không tiết lộ email có tồn tại hay không (bảo mật)
                 log.warn("Forgot password - Email not found: {}", email);
-                return ResponseEntity.ok(new ApiResponse<>("Nếu email tồn tại, bạn sẽ nhận được link reset password", null));
+                return ResponseEntity
+                        .ok(new ApiResponse<>("Nếu email tồn tại, bạn sẽ nhận được link reset password", null));
             }
 
             String siteURL = getSiteURL(request);
             authService.sendPasswordResetEmail(user, siteURL);
 
             log.info("Password reset email sent to: {}", email);
-            return ResponseEntity.ok(new ApiResponse<>("Nếu email tồn tại, bạn sẽ nhận được link reset password", null));
+            return ResponseEntity
+                    .ok(new ApiResponse<>("Nếu email tồn tại, bạn sẽ nhận được link reset password", null));
 
         } catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Forgot password - Email error: {}", e.getMessage());
@@ -146,16 +157,17 @@ public class AuthController {
 
     // # NOTE: Endpoint reset mật khẩu - Xác thực token và cập nhật mật khẩu
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String token, 
-                                                            @RequestParam String newPassword) {
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@RequestParam String token,
+            @RequestParam String newPassword) {
         try {
             log.info("Reset password attempt");
-            
+
             boolean success = authService.resetPassword(token, newPassword);
-            
+
             if (success) {
                 log.info("Password reset successfully");
-                return ResponseEntity.ok(new ApiResponse<>("Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại", null));
+                return ResponseEntity
+                        .ok(new ApiResponse<>("Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại", null));
             } else {
                 log.warn("Reset password failed - Invalid or expired token");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

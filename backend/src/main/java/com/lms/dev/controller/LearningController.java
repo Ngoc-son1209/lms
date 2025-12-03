@@ -1,4 +1,5 @@
 package com.lms.dev.controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class LearningController {
     public List<Course> getLearningCourses(@PathVariable UUID userId) {
         return learningService.getLearningCourses(userId);
     }
-    
+
     @GetMapping
     public List<Learning> getEnrollments() {
         return learningService.getEnrollments();
@@ -35,5 +36,11 @@ public class LearningController {
     @DeleteMapping("/{id}")
     public void unenrollCourse(@PathVariable UUID id) {
         learningService.unenrollCourse(id);
+    }
+
+    // New: list students by course
+    @GetMapping("/course/{courseId}/students")
+    public List<com.lms.dev.dto.StudentDTO> getStudentsByCourse(@PathVariable UUID courseId) {
+        return learningService.getStudentsByCourse(courseId);
     }
 }

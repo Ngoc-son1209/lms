@@ -1,8 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../Components/common/Navbar";
 import { authService } from "../../api/auth.service";
-import { User, Mail, Phone, Lock, Calendar, MapPin, Briefcase, UserPlus, AlertCircle, CheckCircle, Info } from "lucide-react";
+import { instructorService } from "../../api/instructor.service";
+import {
+  User,
+  Mail,
+  Phone,
+  Lock,
+  Calendar,
+  MapPin,
+  Briefcase,
+  UserPlus,
+  AlertCircle,
+  CheckCircle,
+  Info,
+  GraduationCap,
+} from "lucide-react";
 import { InputField } from "../../Components/common/InputFeild";
 
 function RegistrationForm() {
@@ -11,6 +25,7 @@ function RegistrationForm() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [role, setRole] = useState("USER"); // USER | INSTRUCTOR
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -20,6 +35,9 @@ function RegistrationForm() {
     gender: "",
     location: "",
     profession: "",
+    // Instructor-only fields
+    bio: "",
+    expertise: "",
   });
 
   // Validation rules
@@ -58,10 +76,24 @@ function RegistrationForm() {
         break;
 
       case "dob":
-        if (value) {
-          const birthDate = new Date(value);
-          const today = new Date();
-          const age = today.getFullYear() - birthDate.getFullYear();
+        // optional – FE already sends yyyy-MM-dd via input type=date
+        break;
+
+      case "bio":
+        if (role === "INSTRUCTOR") {
+          if (!value.trim()) {
+            errors.bio = "Vui lòng nhập Bio/giới thiệu";
+          } else if (value.trim().length < 20) {
+            errors.bio = "Bio tối thiểu 20 ký tự";
+          }
+        }
+        break;
+
+      case "expertise":
+        if (role === "INSTRUCTOR") {
+          if (!value.trim()) {
+            errors.expertise = "Vui lòng nhập chuyên môn";
+          }
         }
         break;
 
@@ -76,10 +108,8 @@ function RegistrationForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Clear general error when user starts typing
     if (error) setError("");
 
-    // Validate field on change and clear error if valid
     const fieldError = validateField(name, value);
     if (fieldError[name]) {
       setFieldErrors({ ...fieldErrors, [name]: fieldError[name] });
@@ -93,7 +123,6 @@ function RegistrationForm() {
   const validateForm = () => {
     const errors = {};
 
-    // Validate all fields
     const usernameErr = validateField("username", formData.username);
     const emailErr = validateField("email", formData.email);
     const phoneErr = validateField("mobileNumber", formData.mobileNumber);
@@ -107,6 +136,13 @@ function RegistrationForm() {
     if (dobErr.dob) errors.dob = dobErr.dob;
     if (!formData.gender) errors.gender = "Vui lòng chọn giới tính";
 
+    if (role === "INSTRUCTOR") {
+      const bioErr = validateField("bio", formData.bio);
+      const exErr = validateField("expertise", formData.expertise);
+      if (bioErr.bio) errors.bio = bioErr.bio;
+      if (exErr.expertise) errors.expertise = exErr.expertise;
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -116,7 +152,6 @@ function RegistrationForm() {
     setError("");
     setSuccessMessage("");
 
-    // Validate form before submit
     if (!validateForm()) {
       return;
     }
@@ -124,11 +159,43 @@ function RegistrationForm() {
     setIsLoading(true);
 
     try {
-      const result = await authService.register(formData);
+      let result;
+      if (role === "INSTRUCTOR") {
+        // call instructor register API
+        result = await instructorService.registerInstructor({
+          fullName: formData.username,
+          email: formData.email,
+          password: formData.password,
+          bio: formData.bio,
+          expertise: formData.expertise,
+          mobileNumber: formData.mobileNumber,
+          dob: formData.dob,
+          gender: formData.gender,
+          location: formData.location,
+          profession: formData.profession,
+        });
+      } else {
+        // default user register
+        result = await authService.register({
+          username: formData.username,
+          email: formData.email,
+          mobileNumber: formData.mobileNumber,
+          password: formData.password,
+          dob: formData.dob,
+          gender: formData.gender,
+          location: formData.location,
+          profession: formData.profession,
+        });
+      }
 
       if (result.success) {
-        setSuccessMessage(`Đăng ký thành công! Vui lòng vào email ${formData.email} để xác nhận tài khoản của bạn.`);
-        
+        const successText =
+          role === "INSTRUCTOR"
+            ? `Đăng ký giảng viên thành công! Vui lòng vào email ${formData.email} để xác thực. Sau đó chờ Admin duyệt để có thể đăng nhập.`
+            : `Đăng ký thành công! Vui lòng vào email ${formData.email} để xác nhận tài khoản của bạn.`;
+
+        setSuccessMessage(successText);
+
         // Reset form
         setFormData({
           username: "",
@@ -139,32 +206,28 @@ function RegistrationForm() {
           gender: "",
           location: "",
           profession: "",
+          bio: "",
+          expertise: "",
         });
 
         // Navigate to login after 3 seconds
         setTimeout(() => {
           navigate("/login", {
-            state: { message: `Đăng ký thành công! Vui lòng vào email ${formData.email} để xác nhận tài khoản của bạn.` }
+            state: { message: successText },
           });
         }, 3000);
       } else {
-        // Handle specific errors from server
         if (result.statusCode === 409) {
-          // Email or phone already exists
           setError(result.error);
-          
-          // Highlight the affected field
           if (result.error.includes("Email")) {
             setFieldErrors({ ...fieldErrors, email: result.error });
           } else if (result.error.includes("Số điện thoại")) {
             setFieldErrors({ ...fieldErrors, mobileNumber: result.error });
           }
         } else if (result.errors) {
-          // Validation errors from backend
           setFieldErrors(result.errors);
           setError("Vui lòng sửa các lỗi dưới đây");
         } else {
-          // Generic error
           setError(result.error || "Đăng ký thất bại. Vui lòng thử lại.");
         }
       }
@@ -175,6 +238,20 @@ function RegistrationForm() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const current = authService.getCurrentUser();
+    if (current?.token) {
+      const role = current.role;
+      if (role === "ROLE_ADMIN") {
+        navigate("/admin", { replace: true });
+      } else if (role === "ROLE_INSTRUCTOR") {
+        navigate("/instructor/courses", { replace: true });
+      } else {
+        navigate("/courses", { replace: true });
+      }
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -190,6 +267,37 @@ function RegistrationForm() {
           </div>
 
           <div className="bg-white shadow-2xl rounded-2xl p-8 border border-gray-100">
+            {/* Role selection */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4">
+                Vai Trò
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setRole("USER")}
+                  className={`flex items-center gap-3 w-full p-4 rounded-lg border transition ${role === "USER"
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-gray-300 bg-white"
+                    }`}
+                >
+                  <User className="h-5 w-5 text-blue-600" />
+                  <span>Học viên</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("INSTRUCTOR")}
+                  className={`flex items-center gap-3 w-full p-4 rounded-lg border transition ${role === "INSTRUCTOR"
+                    ? "border-purple-600 bg-purple-50"
+                    : "border-gray-300 bg-white"
+                    }`}
+                >
+                  <GraduationCap className="h-5 w-5 text-purple-600" />
+                  <span>Giảng viên</span>
+                </button>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Basic Information */}
               <div className="space-y-6">
@@ -322,9 +430,8 @@ function RegistrationForm() {
                       name="gender"
                       value={formData.gender}
                       onChange={handleChange}
-                      className={`block w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white ${
-                        fieldErrors.gender ? "border-red-500" : "border-gray-300"
-                      }`}
+                      className={`block w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white ${fieldErrors.gender ? "border-red-500" : "border-gray-300"
+                        }`}
                     >
                       <option value="">Chọn Giới Tính</option>
                       <option value="Male">Nam</option>
@@ -341,6 +448,62 @@ function RegistrationForm() {
                   </div>
                 </div>
               </div>
+
+              {/* Instructor Profile (conditional) */}
+              {role === "INSTRUCTOR" && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
+                    Hồ Sơ Giảng Viên
+                  </h3>
+                  <div className="grid grid-cols-1 gap-6">
+                    {/* Bio */}
+                    <div>
+                      <label className="block font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent mb-1">
+                        Bio / Giới thiệu
+                      </label>
+                      <textarea
+                        name="bio"
+                        value={formData.bio}
+                        onChange={handleChange}
+                        rows={4}
+                        placeholder="Giới thiệu về bản thân, kinh nghiệm, thành tựu..."
+                        className={`block w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900 bg-white ${fieldErrors.bio ? "border-red-500" : "border-gray-300"
+                          }`}
+                      />
+                      {fieldErrors.bio && (
+                        <div className="flex items-center gap-2 mt-2 text-red-600 text-sm">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>{fieldErrors.bio}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Expertise */}
+                    <div>
+                      <InputField
+                        id="expertise"
+                        name="expertise"
+                        value={formData.expertise}
+                        onChange={handleChange}
+                        icon={<Briefcase className="h-5 w-5 text-gray-400" />}
+                        label="Chuyên Môn"
+                        required
+                        placeholder="Ví dụ: Java, Spring Boot, Microservices"
+                      />
+                      {fieldErrors.expertise && (
+                        <div className="flex items-center gap-2 mt-2 text-red-600 text-sm">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>{fieldErrors.expertise}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+                    Sau khi xác thực email, tài khoản giảng viên sẽ cần chờ Admin duyệt thì mới có thể đăng nhập.
+                  </div>
+                </div>
+              )}
 
               {/* Professional Details */}
               <div className="space-y-6">
@@ -396,7 +559,11 @@ function RegistrationForm() {
                       <li>Kiểm tra hộp thư email chính của bạn</li>
                       <li>Nếu không thấy, vui lòng kiểm tra thư mục Spam</li>
                       <li>Nhấp vào link xác nhận trong email để kích hoạt tài khoản</li>
-                      <li>Sau đó đăng nhập với email và mật khẩu của bạn</li>
+                      {role === "INSTRUCTOR" ? (
+                        <li>Sau khi xác thực, vui lòng chờ Admin duyệt để đăng nhập</li>
+                      ) : (
+                        <li>Sau đó đăng nhập với email và mật khẩu của bạn</li>
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -406,15 +573,31 @@ function RegistrationForm() {
                 type="submit"
                 disabled={isLoading || !!successMessage}
                 className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-300 ${isLoading || successMessage
-                    ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
                   }`}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Đang Tạo Tài Khoản...
                   </div>
@@ -450,9 +633,13 @@ function RegistrationForm() {
           <div className="text-center">
             <p className="text-sm text-gray-500">
               Bằng cách tạo tài khoản, bạn đồng ý với{" "}
-              <a href="#" className="text-blue-600 hover:text-blue-700 transition-colors">Điều Khoản Dịch Vụ</a>
-              {" "} và {" "}
-              <a href="#" className="text-blue-600 hover:text-blue-700 transition-colors">Chính Sách Bảo Mật</a>
+              <a href="#" className="text-blue-600 hover:text-blue-700 transition-colors">
+                Điều Khoản Dịch Vụ
+              </a>{" "}
+              và{" "}
+              <a href="#" className="text-blue-600 hover:text-blue-700 transition-colors">
+                Chính Sách Bảo Mật
+              </a>
             </p>
           </div>
         </div>

@@ -21,21 +21,21 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Questions> addQuestion(@RequestBody QuestionRequest request) {
         Questions question = questionService.addQuestion(request);
         return new ResponseEntity<>(question, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @PutMapping("/{id}")
     public ResponseEntity<Questions> updateQuestion(@PathVariable UUID id, @RequestBody QuestionRequest request) {
         Questions updated = questionService.updateQuestion(id, request);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable UUID id) {
         questionService.deleteQuestion(id);

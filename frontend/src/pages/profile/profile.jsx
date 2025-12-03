@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/common/Navbar";
 import ImgUpload from "./ImgUpload";
 import Performance from "./Performance";
+import { authService } from "../../api/auth.service";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGithub,
@@ -31,11 +32,17 @@ function Profile() {
   const [loadingImage, setLoadingImage] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const isInstructor = authService.getCurrentUser()?.role === 'ROLE_INSTRUCTOR';
 
   useEffect(() => {
     async function fetchUserDetails() {
       try {
-        const userRes = await profileService.getUserDetails(id);
+        let userRes;
+        if (isInstructor) {
+          userRes = await profileService.getInstructorProfile();
+        } else {
+          userRes = await profileService.getUserDetails(id);
+        }
         if (userRes.success) {
           setUserDetails(userRes.data);
         }
@@ -53,14 +60,24 @@ function Profile() {
 
   const updateUser = async (updatedData) => {
     try {
-      const res = await profileService.updateUser(id, updatedData);
-
-      setUserDetails(prevDetails => ({
-        ...prevDetails,
-        ...updatedData
-      }));
-
-      return true;
+      if (isInstructor) {
+        const res = await profileService.updateInstructorProfile(updatedData);
+        if (res.success) {
+          setUserDetails(res.data);
+          return true;
+        }
+        return false;
+      } else {
+        const res = await profileService.updateUser(id, updatedData);
+        if (res.success) {
+          setUserDetails(prevDetails => ({
+            ...prevDetails,
+            ...updatedData
+          }));
+          return true;
+        }
+        return false;
+      }
     } catch (err) {
       console.error("Error updating user:", err);
       return false;
@@ -135,12 +152,20 @@ function Profile() {
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">
                       {userDetails?.username || "User"}
                     </h2>
-                    <p className="text-gray-600 text-lg">{userDetails?.profession || "Learner"}</p>
-                    {userDetails?.location && (<div className="flex items-center text-gray-500 mt-1">
-                      <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-sm" />
-                      {userDetails?.location}
-                    </div>)}
+
+                    <div className="flex items-center gap-3 text-lg text-gray-600">
+                      {userDetails?.location && (
+                        <div className="flex items-center text-gray-500 text-base">
+                          <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-sm" />
+                          <span>{userDetails.location}</span>
+                        </div>
+                      )}
+                      <span>{userDetails?.profession || "Learner"}</span>
+
+
+                    </div>
                   </div>
+
 
                   <button
                     onClick={handleEditProfile}
@@ -182,32 +207,34 @@ function Profile() {
             )}
 
             {/* Tab Navigation */}
-            <div className="flex space-x-1 bg-gray-100 rounded-xl p-1">
-              <button
-                onClick={() => setActiveTab("overview")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === "overview"
-                  ? "bg-white text-indigo-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800"
-                  }`}
-              >
-                <FontAwesomeIcon icon={faUser} />
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab("performance")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === "performance"
-                  ? "bg-white text-indigo-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800"
-                  }`}
-              >
-                <FontAwesomeIcon icon={faTrophy} />
-                Performance
-              </button>
-            </div>
+            {!isInstructor && (
+              <div className="flex space-x-1 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setActiveTab("overview")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === "overview"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-800"
+                    }`}
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  Overview
+                </button>
+                <button
+                  onClick={() => setActiveTab("performance")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${activeTab === "performance"
+                    ? "bg-white text-indigo-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-800"
+                    }`}
+                >
+                  <FontAwesomeIcon icon={faTrophy} />
+                  Performance
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {activeTab === "overview" ? (
+        {isInstructor || activeTab === "overview" ? (
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -246,12 +273,21 @@ function Profile() {
                   value={userDetails?.profession}
                   iconColor="text-orange-500"
                 />
-                <InfoCard
-                  icon={faBookOpen}
-                  label="Learning Courses"
-                  value={userDetails?.learningCourses?.length || 0}
-                  iconColor="text-indigo-500"
-                />
+                {isInstructor ? (
+                  <InfoCard
+                    icon={faBookOpen}
+                    label="Expertise"
+                    value={userDetails?.expertise}
+                    iconColor="text-indigo-500"
+                  />
+                ) : (
+                  <InfoCard
+                    icon={faBookOpen}
+                    label="Learning Courses"
+                    value={userDetails?.learningCourses?.length || 0}
+                    iconColor="text-indigo-500"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -265,6 +301,7 @@ function Profile() {
         onCancel={handleModalClose}
         userDetails={userDetails}
         onUpdate={handleProfileUpdate}
+        isInstructor={isInstructor}
       />
     </div>
   );

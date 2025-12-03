@@ -1,6 +1,6 @@
 package com.lms.dev.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lms.dev.enums.ApprovalStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -31,10 +30,6 @@ public class Instructor {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    @JsonIgnore
-    private String password;
-
     @NotBlank
     @Column(columnDefinition = "TEXT")
     private String bio;
@@ -42,9 +37,17 @@ public class Instructor {
     @NotBlank
     private String expertise;
 
-    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Course> coursesTaught;
+    // Trạng thái duyệt hồ sơ (PENDING/APPROVED/REJECTED)
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ApprovalStatus status = ApprovalStatus.PENDING;
+
+    // Lý do từ chối (nếu bị từ chối)
+    @Column(columnDefinition = "TEXT")
+    private String rejectReason;
+
+    private LocalDateTime rejectedAt;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -52,7 +55,4 @@ public class Instructor {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column(nullable = false)
-    private boolean approved = false; // Admin duyệt mới login
 }
