@@ -39,6 +39,26 @@ async function getMyCourses() {
   }
 }
 
+async function getAllCoursesWithCount() {
+  try {
+    const { data } = await api.get("/api/courses/with-count");
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching courses with count:", error);
+    return { success: false, error: "Could not fetch courses with count" };
+  }
+}
+
+async function getMyCoursesWithCount() {
+  try {
+    const { data } = await api.get("/api/courses/my/with-count");
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching my courses with count:", error);
+    return { success: false, error: "Could not fetch my courses with count" };
+  }
+}
+
 async function getCourseById(courseId) {
   try {
     const { data } = await api.get(`/api/courses/${courseId}`);
@@ -243,6 +263,8 @@ async function getFeedbacks(courseId) {
 export const adminService = {
   getAllCourses,
   getMyCourses,
+  getAllCoursesWithCount,
+  getMyCoursesWithCount,
   getCourseById,
   createCourse,
   updateCourse,

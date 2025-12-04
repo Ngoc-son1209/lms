@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus, faBookOpen, faClipboardList } from "@fortawesome/free-solid-svg-icons";
-import { message } from "antd";
+import { message, Card } from "antd";
 import { adminService } from "../../api/admin.service";
 import CourseModal from "./CourseModal";
 import DeleteModal from "./DeleteModal";
 import AddQuestion from "./AddQuestions";
+import SearchFilter from "../../Components/common/SearchFilter";
 
 function Courses() {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({ keyword: "" });
 
   const [courseModal, setCourseModal] = useState({
     isOpen: false,
@@ -33,8 +37,8 @@ function Courses() {
     try {
       const role = localStorage.getItem("role");
       const result = role === "ROLE_INSTRUCTOR"
-        ? await adminService.getMyCourses()
-        : await adminService.getAllCourses();
+        ? await adminService.getMyCoursesWithCount()
+        : await adminService.getAllCoursesWithCount();
       if (result.success) {
         setCourses(result.data);
       } else {
@@ -83,6 +87,15 @@ function Courses() {
     setSelectedCourseId(course_id);
   };
 
+  // Apply keyword filter
+  const filteredCourses = courses.filter((c) => {
+    const kw = (filters.keyword || "").toLowerCase().trim();
+    if (!kw) return true;
+    return [c.course_name, c.instructor]
+      .filter(Boolean)
+      .some((x) => String(x).toLowerCase().includes(kw));
+  });
+
   return (
     <div className="max-w-7xl mx-auto">
       {selectedCourseId ? (
@@ -106,6 +119,14 @@ function Courses() {
           </div>
 
           <div className="p-8">
+            <Card className="shadow-xl mb-4">
+              <SearchFilter
+                fields={[{ type: "input", name: "keyword", label: "Search", placeholder: "Course/Instructor" }]}
+                initialValues={filters}
+                onChange={setFilters}
+                debounce={250}
+              />
+            </Card>
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
@@ -129,7 +150,7 @@ function Courses() {
               </div>
             ) : (
               <div className="grid gap-4">
-                {courses.map((course) => (
+                {filteredCourses.map((course) => (
                   <div key={course.course_id} className="group bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-blue-200 transition-all duration-300 overflow-hidden" >
                     <div className="p-6 flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -155,7 +176,7 @@ function Courses() {
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                             <span className="text-sm text-gray-600">Students:</span>
-                            <span className="text-sm font-medium text-gray-900"> {course.students || 0} </span>
+                            <span className="text-sm font-medium text-gray-900"> {course.studentCount ?? 0} </span>
                           </div>
                         </div>
                       </div>
@@ -171,7 +192,11 @@ function Courses() {
                     </div>
                     <div className="border-t border-gray-100 bg-gray-50 px-6 py-3 flex justify-between items-center">
                       <div className="flex gap-6 text-sm text-gray-600">{/* meta info here */}</div>
-                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium"> View Details → </button>
+                      <button onClick={() => {
+                        const role = localStorage.getItem("role");
+                        const path = role === "ROLE_INSTRUCTOR" ? `/instructor/course/${course.course_id}/preview` : `/admin/course/${course.course_id}/preview`;
+                        navigate(path);
+                      }} className="text-blue-600 hover:text-blue-800 text-sm font-medium"> View Details → </button>
                     </div>
                   </div>
                 ))}

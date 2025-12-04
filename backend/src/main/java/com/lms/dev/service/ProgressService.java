@@ -5,10 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.lms.dev.dto.ProgressDetailDTO;
 import com.lms.dev.dto.ProgressRequest;
 import com.lms.dev.entity.Course;
 import com.lms.dev.entity.Progress;
 import com.lms.dev.entity.User;
+import com.lms.dev.entity.Assessment;
+import com.lms.dev.repository.AssessmentRepository;
 import com.lms.dev.repository.CourseRepository;
 import com.lms.dev.repository.ProgressRepository;
 import com.lms.dev.repository.UserRepository;
@@ -25,6 +28,8 @@ public class ProgressService {
 
     private final CourseRepository courseRepository;
 
+    private final AssessmentRepository assessmentRepository;
+
     public ResponseEntity<String> updateProgress(ProgressRequest request) {
         UUID userId = request.getUserId();
         UUID courseId = request.getCourseId();
@@ -36,7 +41,7 @@ public class ProgressService {
 
         if (user != null && course != null) {
             Progress progress = progressRepository.findByUserAndCourse(user, course);
-            if (progress != null && (progress.getPlayedTime() == 0 || progress.getPlayedTime()<= playedTime)) {
+            if (progress != null && (progress.getPlayedTime() == 0 || progress.getPlayedTime() <= playedTime)) {
                 progress.setPlayedTime(playedTime);
                 progress.setDuration(duration);
                 progressRepository.save(progress);
@@ -48,18 +53,18 @@ public class ProgressService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User or course not found");
     }
 
-	public float getProgress(UUID userId, UUID courseId) {
-		User user = userRepository.findById(userId).orElse(null);
+    public float getProgress(UUID userId, UUID courseId) {
+        User user = userRepository.findById(userId).orElse(null);
         Course course = courseRepository.findById(courseId).orElse(null);
 
         if (user != null && course != null) {
-         Progress progress = progressRepository.findByUserAndCourse(user, course);
-         return progress.getPlayedTime();
+            Progress progress = progressRepository.findByUserAndCourse(user, course);
+            return progress.getPlayedTime();
         }
-		return 0; 
-	}
+        return 0;
+    }
 
-	public ResponseEntity<String> updateDuration(ProgressRequest request) {
+    public ResponseEntity<String> updateDuration(ProgressRequest request) {
         UUID userId = request.getUserId();
         UUID courseId = request.getCourseId();
         float newDuration = request.getDuration();
@@ -76,13 +81,37 @@ public class ProgressService {
 
                 return ResponseEntity.ok("Duration updated successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Progress not found for the given user and course");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Progress not found for the given user and course");
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User or course not found");
         }
     }
 
-    
+    public ProgressDetailDTO getProgressDetail(UUID userId, UUID courseId) {
+        User user = userRepository.findById(userId).orElse(null);
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (user == null || course == null) {
+            return new ProgressDetailDTO(0f, 0f, null);
+        }
+        Progress progress = progressRepository.findByUserAndCourse(user, course);
+        float played = 0f;
+        float duration = 0f;
+        if (progress != null) {
+            played = progress.getPlayedTime();
+            duration = progress.getDuration();
+        }
+        // Choose best (max) marks among assessments for this user/course
+        Integer marks = null;
+        try {
+            java.util.List<Assessment> list = assessmentRepository.findByUserAndCourse(user, course);
+            if (list != null && !list.isEmpty()) {
+                marks = list.stream().map(Assessment::getMarks).filter(java.util.Objects::nonNull)
+                        .max(Integer::compareTo).orElse(null);
+            }
+        } catch (Exception ignored) {
+        }
+        return new ProgressDetailDTO(played, duration, marks);
+    }
 }
-

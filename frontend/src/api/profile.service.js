@@ -14,6 +14,7 @@ async function getProfileImage(userId) {
   try {
     const res = await api.get(`/api/users/${userId}/profile-image`, {
       responseType: "blob",
+      headers: { "x-skip-404": "1" },
     });
     const blobUrl = URL.createObjectURL(res.data);
     return { success: true, data: blobUrl };

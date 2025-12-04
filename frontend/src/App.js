@@ -18,6 +18,8 @@ import AddQuestions from './pages/dashBoard/AddQuestions';
 import Performance from './pages/profile/Performance';
 import certificate from './pages/assessment/certificate';
 import Forum from './pages/course/forum';
+import CoursePreview from './pages/course/CoursePreview';
+import AdminCoursePreview from './pages/dashBoard/AdminCoursePreview';
 import AdminDashboard from './pages/dashBoard/AdminDashboard';
 // Import các Component mới cho quản lý nội dung
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
@@ -127,6 +129,10 @@ function App() {
 
           {/* Admin AddQuestions (Dường như là một phần của Dashboard) */}
           <Route path="/addquestions/:id" element={<AdminRoute><AddQuestions /></AdminRoute>} />
+
+          {/* Preview course for Admin/Instructor */}
+          <Route path="/admin/course/:id/preview" element={<AdminRoute><AdminCoursePreview /></AdminRoute>} />
+          <Route path="/instructor/course/:id/preview" element={<InstructorRoute><CoursePreview /></InstructorRoute>} />
 
           {/* ======================= Error Route ======================= */}
           <Route path='*' Component={ErrorPage}></Route>

@@ -8,7 +8,7 @@ import Instructors from "./DInstructors";
 import { authService } from "../../api/auth.service";
 
 function AdminDashboard() {
-  const [current, setCurrent] = useState("dashboard");
+  const [current, setCurrent] = useState(() => localStorage.getItem("adminActiveTab") || "dashboard");
   const isAuthenticated = authService.isAdminAuthenticated();
 
   const renderContent = () => {
@@ -26,9 +26,14 @@ function AdminDashboard() {
     }
   };
 
+  const handleSelect = (key) => {
+    setCurrent(key);
+    try { localStorage.setItem("adminActiveTab", key); } catch { }
+  };
+
   return (
     <div className="flex min-h-screen">
-      <SideBar current={current} onSelect={setCurrent} />
+      <SideBar current={current} onSelect={handleSelect} />
 
       <section className="flex-1 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 transition-all duration-300">
         <main className="p-8 font-poppins">

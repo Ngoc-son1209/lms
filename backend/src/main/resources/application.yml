@@ -51,4 +51,6 @@ logging:
     com.lms.dev: ${APP_LOG_LEVEL:DEBUG}
     org.springframework.security: ${SECURITY_LOG_LEVEL:DEBUG}
 
-
+groq:
+  api:
+    key: 

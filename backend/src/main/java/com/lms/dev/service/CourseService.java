@@ -3,17 +3,21 @@ package com.lms.dev.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.lms.dev.dto.CourseWithCountDTO;
 import com.lms.dev.entity.Course;
 import com.lms.dev.repository.CourseRepository;
+import com.lms.dev.repository.LearningRepository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final LearningRepository learningRepository;
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -21,6 +25,34 @@ public class CourseService {
 
     public List<Course> getCoursesByInstructor(UUID instructorId) {
         return courseRepository.findByInstructorId(instructorId);
+    }
+
+    private CourseWithCountDTO toWithCount(Course c) {
+        long cnt = 0L;
+        try {
+            cnt = learningRepository.countByCourse(c);
+        } catch (Exception ignored) {
+        }
+        return CourseWithCountDTO.builder()
+                .course_id(c.getCourse_id())
+                .instructorId(c.getInstructorId())
+                .course_name(c.getCourse_name())
+                .price(c.getPrice())
+                .instructor(c.getInstructor())
+                .description(c.getDescription())
+                .p_link(c.getP_link())
+                .y_link(c.getY_link())
+                .studentCount(cnt)
+                .build();
+    }
+
+    public List<CourseWithCountDTO> getAllWithCount() {
+        return courseRepository.findAll().stream().map(this::toWithCount).collect(Collectors.toList());
+    }
+
+    public List<CourseWithCountDTO> getByInstructorWithCount(UUID instructorId) {
+        return courseRepository.findByInstructorId(instructorId).stream().map(this::toWithCount)
+                .collect(Collectors.toList());
     }
 
     public Course getCourseById(UUID id) {

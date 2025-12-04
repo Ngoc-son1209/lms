@@ -303,7 +303,7 @@ function DInstructors() {
       type: "select",
       name: "gender",
       label: "Giới tính",
-      placeholder: "Chọn",
+      placeholder: "Chọn giới tính",
       options: [
         { label: "Nam", value: "Male" },
         { label: "Nữ", value: "Female" },
@@ -315,7 +315,7 @@ function DInstructors() {
       type: "select",
       name: "emailVerified",
       label: "Xác thực email",
-      placeholder: "Chọn",
+      placeholder: "Chọn xác thực email",
       options: [
         { label: "Đã xác thực", value: true },
         { label: "Chưa xác thực", value: false },
@@ -370,9 +370,9 @@ function DInstructors() {
 
   return (
     <>
-      <div className="mb-8">
-        <h3 className="text-3xl font-bold text-slate-800 tracking-tight">Instructors Management</h3>
-        <p className="text-slate-600 mt-2">Quản lý giảng viên</p>
+      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Instructors Management</h1>
+        <p className="text-slate-600">Manage and review instructors</p>
       </div>
 
       <Card className="shadow-xl mb-4">

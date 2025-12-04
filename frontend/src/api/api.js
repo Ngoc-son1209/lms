@@ -33,7 +33,11 @@ api.interceptors.response.use(
     } else if (error.response?.status === 403) {
       message.error("You don’t have permission to perform this action.");
     } else if (error.response?.status === 404) {
-      message.error("Requested resource not found.");
+      const cfg = error.config || {};
+      const skip404 = cfg?.headers?.["x-skip-404"] === "1" || (cfg?.url || "").includes("/profile-image");
+      if (!skip404) {
+        message.error("Requested resource not found.");
+      }
     } else if (error.response?.status >= 500) {
       message.error("Server error. Please try again later.");
     }

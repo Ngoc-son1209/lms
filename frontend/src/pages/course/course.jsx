@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReactPlayer from "react-player";
@@ -26,6 +26,28 @@ const Course = () => {
   const location = useLocation();
   const courseId = location.pathname.split("/")[2];
   const playerRef = useRef(null);
+
+  // Normalize potential YouTube IDs/URLs to a valid URL ReactPlayer can play
+  const getYouTubeId = (input) => {
+    if (!input) return null;
+    const str = String(input).trim();
+    // If it's a bare 11-char YouTube ID
+    const idOnly = /^[a-zA-Z0-9_-]{11}$/;
+    if (idOnly.test(str)) return str;
+    // Try to extract from known URL formats
+    const reg = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const m = str.match(reg);
+    return m ? m[1] : null;
+  };
+
+  const videoUrl = useMemo(() => {
+    const y = course?.y_link;
+    if (!y) return null;
+    const ytId = getYouTubeId(y);
+    if (ytId) return `https://www.youtube.com/watch?v=${ytId}`;
+    // Otherwise assume it's a direct file (mp4) or other supported provider URL
+    return y;
+  }, [course?.y_link]);
 
   useEffect(() => {
     async function fetchCourse() {
@@ -121,13 +143,18 @@ const Course = () => {
                 setChangePlayed(progress.playedSeconds);
               }
             }}
-            url={course.y_link}
+            url={videoUrl}
             controls
-            type="video/mp4"
             width="100%"
             height="440px"
             onDuration={handleDuration}
-            played={played}
+            onError={(e) => {
+              console.error("ReactPlayer error:", e, course?.y_link);
+            }}
+            config={{
+              file: { attributes: { crossOrigin: "anonymous" } },
+              youtube: { playerVars: { rel: 0 } }
+            }}
             className="rounded-xl bg-neutral shadow-2xl p-2"
           />
 

@@ -40,7 +40,10 @@ export default function InstructorQuestions() {
             <Navbar />
             <main className="p-6">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-2xl font-bold text-slate-800 mb-4">Quản lý câu hỏi</h1>
+                    <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
+                        <h1 className="text-3xl font-bold text-gray-900">Questions Management</h1>
+                        <p className="text-slate-600">Create and manage test questions</p>
+                    </div>
 
                     {!selectedCourse ? (
                         <Card className="mb-4">

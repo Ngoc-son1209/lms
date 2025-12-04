@@ -1,9 +1,11 @@
 package com.lms.dev.controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.lms.dev.dto.ProgressRequest;
+import com.lms.dev.dto.ProgressDetailDTO;
 import com.lms.dev.service.ProgressService;
 
 import java.util.UUID;
@@ -20,11 +22,16 @@ public class ProgressController {
         return progressService.getProgress(userId, courseId);
     }
 
+    @GetMapping("/detail/{userId}/{courseId}")
+    public ProgressDetailDTO getProgressDetail(@PathVariable UUID userId, @PathVariable UUID courseId) {
+        return progressService.getProgressDetail(userId, courseId);
+    }
+
     @PutMapping("/update-progress")
     public ResponseEntity<String> updateProgress(@RequestBody ProgressRequest request) {
         return progressService.updateProgress(request);
     }
-    
+
     @PutMapping("/update-duration")
     public ResponseEntity<String> updateDuration(@RequestBody ProgressRequest request) {
         return progressService.updateDuration(request);

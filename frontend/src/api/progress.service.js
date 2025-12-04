@@ -30,8 +30,19 @@ async function updateProgress(userId, courseId, playedTime, duration) {
   }
 }
 
+async function getProgressDetail(userId, courseId) {
+  try {
+    const { data } = await api.get(`/api/progress/detail/${userId}/${courseId}`);
+    return { success: true, data };
+  } catch (err) {
+    console.error("Error fetching progress detail:", err);
+    return { success: false, error: err.response?.data?.message || "Unable to fetch progress detail" };
+  }
+}
+
 export const progressService = {
   getProgress,
   updateDuration,
   updateProgress,
+  getProgressDetail,
 };

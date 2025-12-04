@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.lms.dev.dto.CourseWithCountDTO;
 import com.lms.dev.entity.Course;
 import com.lms.dev.security.UserPrincipal;
 import com.lms.dev.service.CourseService;
@@ -26,10 +27,22 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/with-count")
+    public List<CourseWithCountDTO> getAllCoursesWithCount() {
+        return courseService.getAllWithCount();
+    }
+
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @GetMapping("/my")
     public List<Course> getMyCourses(@AuthenticationPrincipal UserPrincipal principal) {
         return courseService.getCoursesByInstructor(principal.getId());
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/my/with-count")
+    public List<CourseWithCountDTO> getMyCoursesWithCount(@AuthenticationPrincipal UserPrincipal principal) {
+        return courseService.getByInstructorWithCount(principal.getId());
     }
 
     @GetMapping("/{id}")

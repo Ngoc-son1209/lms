@@ -14,4 +14,6 @@ public interface LearningRepository extends JpaRepository<Learning, UUID> {
 	Learning findByUserAndCourse(User user, Course course);
 
 	List<Learning> findByCourse(Course course);
+
+	long countByCourse(Course course);
 }

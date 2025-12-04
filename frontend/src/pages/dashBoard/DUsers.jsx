@@ -192,13 +192,9 @@ function Users() {
 
   return (
     <>
-      <div className="mb-8">
-        <h3 className="text-3xl font-bold text-slate-800 tracking-tight">
-          Users Management
-        </h3>
-        <p className="text-slate-600 mt-2">
-          Manage and view all registered users
-        </p>
+      <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Users Management</h1>
+        <p className="text-slate-600">Manage and view all registered users</p>
       </div>
 
       <Card className="shadow-xl mb-4">
