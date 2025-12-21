@@ -13,7 +13,7 @@ function Courses() {
   const [sortBy, setSortBy] = useState("name");
   const [filterBy, setFilterBy] = useState("all");
   const [displayCount, setDisplayCount] = useState(6);
-  
+
   const userId = localStorage.getItem("id");
   const authToken = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -42,9 +42,8 @@ function Courses() {
 
   const filteredAndSortedCourses = useMemo(() => {
     let filtered = courses.filter(course => {
-      const matchesSearch = course.course_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           course.instructor.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch = (course.course_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (course.description || "").toLowerCase().includes(searchTerm.toLowerCase());
       if (filterBy === "enrolled") return matchesSearch && enrolled.includes(course.course_id);
       if (filterBy === "available") return matchesSearch && !enrolled.includes(course.course_id);
       return matchesSearch;
@@ -54,8 +53,6 @@ function Courses() {
       switch (sortBy) {
         case "name":
           return a.course_name.localeCompare(b.course_name);
-        case "instructor":
-          return a.instructor.localeCompare(b.instructor);
         case "price":
           return (a.price || 0) - (b.price || 0);
         default:
@@ -92,49 +89,49 @@ function Courses() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          
+
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Search courses or instructors..."
+                placeholder="Tìm kiếm khóa học hoặc giảng viên..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
-            
+
             <div className="flex gap-3">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
               >
-                <option value="name">Sort by Name</option>
-                <option value="instructor">Sort by Instructor</option>
-                <option value="price">Sort by Price</option>
+                <option value="name">Sắp xếp theo tên</option>
+                <option value="instructor">Sắp xếp theo giảng viên</option>
+                <option value="price">Sắp xếp theo giá</option>
               </select>
-              
+
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value)}
                 className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
               >
-                <option value="all">All Courses</option>
-                <option value="available">Available</option>
-                <option value="enrolled">Enrolled</option>
+                <option value="all">Tất cả khóa học</option>
+                <option value="available">Khả dụng</option>
+                <option value="enrolled">Đã đăng ký</option>
               </select>
             </div>
           </div>
 
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Showing {displayedCourses.length} of {filteredAndSortedCourses.length} courses</span>
+            <span>Hiển thị {displayedCourses.length} trên {filteredAndSortedCourses.length} khóa học</span>
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
                 className="text-blue-600 hover:text-blue-800"
               >
-                Clear search
+                Xóa bộ lọc
               </button>
             )}
           </div>
@@ -163,10 +160,10 @@ function Courses() {
                   className="bg-white rounded-2xl shadow-lg border-0 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden group backdrop-blur-sm"
                 >
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={course.p_link} 
-                      alt={course.course_name} 
-                      className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200" 
+                    <img
+                      src={course.p_link}
+                      alt={course.course_name}
+                      className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                     <div className="absolute top-3 right-3">
                       <span className="bg-white/90 backdrop-blur-sm text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
@@ -174,12 +171,12 @@ function Courses() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
                       {course.course_name.length < 8 ? `${course.course_name} Tutorial` : course.course_name}
                     </h3>
-                    
+
                     <p className="text-gray-500 text-sm mb-6 flex items-center">
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                       by {course.instructor}

@@ -75,7 +75,7 @@ function Login() {
               <LogIn className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
-            <p className="text-gray-600">Sign in to your account to continue</p>
+            <p className="text-gray-600">Đăng nhập vào tài khoản của bạn để tiếp tục</p>
           </div>
 
           <div className="bg-white shadow-2xl rounded-2xl p-8 border border-gray-100">
@@ -84,11 +84,11 @@ function Login() {
                 id="email"
                 name="email"
                 type="email"
-                label="Email Address"
+                label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="Enter your email address"
+                placeholder="Nhập email của bạn"
                 icon={<Mail className="h-5 w-5 text-gray-500" />}
               />
 
@@ -100,7 +100,7 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Enter your password"
+                placeholder="Nhập mật khẩu của bạn"
                 icon={<Lock className="h-5 w-5 text-gray-500" />}
               />
 
@@ -109,7 +109,7 @@ function Login() {
                   to="/forgot-password"
                   className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
                 >
-                  Forgot your password?
+                  Quên mật khẩu?
                 </Link>
               </div>
 
@@ -149,10 +149,10 @@ function Login() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Signing In...
+                    Đăng nhập...
                   </div>
                 ) : (
-                  "Sign In"
+                  "Đăng nhập"
                 )}
               </button>
             </form>
@@ -163,18 +163,18 @@ function Login() {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">New to our platform?</span>
+                  <span className="px-4 bg-white text-gray-500">Bạn mới sử dụng nền tảng này?</span>
                 </div>
               </div>
 
               <div className="mt-6 text-center">
                 <p className="text-gray-600">
-                  Don't have an account?{" "}
+                  Bạn chưa có tài khoản?{" "}
                   <Link
                     to="/register"
                     className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
                   >
-                    Create account here
+                    Tạo tài khoản mới ở đây
                   </Link>
                 </p>
               </div>

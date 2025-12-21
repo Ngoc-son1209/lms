@@ -47,6 +47,16 @@ export default function CoursePreview() {
         return m ? m[1] : null;
     };
 
+    const formatDate = (iso) => {
+        if (!iso) return "";
+        try {
+            const d = new Date(iso);
+            return d.toLocaleDateString();
+        } catch {
+            return String(iso);
+        }
+    };
+
     const videoUrl = useMemo(() => {
         const y = course?.y_link;
         if (!y) return null;
@@ -97,6 +107,19 @@ export default function CoursePreview() {
                         </div>
                         <p className="text-gray-700 whitespace-pre-wrap">{course.description}</p>
                     </div>
+
+                    {/* <div className="mt-8 bg-white shadow-2xl rounded-xl p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                            <div>
+                                <h5 className="font-semibold text-gray-500 uppercase tracking-wider text-sm">Start Date</h5>
+                                <p className="text-gray-800 text-lg mt-1">{course.startAt ? formatDate(course.startAt) : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <h5 className="font-semibold text-gray-500 uppercase tracking-wider text-sm">End Date</h5>
+                                <p className="text-gray-800 text-lg mt-1">{course.endAt ? formatDate(course.endAt) : 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div> */}
 
                     <div className="flex gap-4 mt-6">
                         <button

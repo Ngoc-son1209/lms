@@ -14,7 +14,7 @@ function Learnings() {
     async function fetchCourse() {
       try {
         const response = await learningService.getEnrollments(userId);
-        setCourse(response.data);        
+        setCourse(response.data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -81,13 +81,13 @@ function Learnings() {
                     ? `${course.course_name} Tutorial`
                     : course.course_name}
                 </h3>
-                <p className="text-sm text-gray-600 max-md:text-xs">
+                {/* <p className="text-sm text-gray-600 max-md:text-xs">
                   by {course.instructor}
-                </p>
+                </p> */}
               </div>
               <Link to={`/course/${course.course_id}`} className="ml-3">
                 <button className="bg-secondary-dark text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-secondary-dark/80 transition max-md:px-2 max-md:py-1 max-md:text-[10px]">
-                  Start Learning
+                  Bắt đầu học
                 </button>
               </Link>
             </div>

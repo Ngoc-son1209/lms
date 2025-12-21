@@ -51,14 +51,14 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
       const success = await onUpdate(formattedValues);
 
       if (success) {
-        message.success('Profile updated successfully!');
+        message.success('Cập nhật hồ sơ thành công!');
         onCancel();
       } else {
-        message.error('Failed to update profile. Please try again.');
+        message.error('Không thể cập nhật hồ sơ. Vui lòng thử lại.');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      message.error('Failed to update profile. Please try again.');
+      message.error('Không thể cập nhật hồ sơ. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
       new URL(value);
       return Promise.resolve();
     } catch {
-      return Promise.reject(new Error('Please enter a valid URL'));
+      return Promise.reject(new Error('Vui lòng nhập một URL hợp lệ'));
     }
   };
 
@@ -80,7 +80,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FontAwesomeIcon icon={faUser} style={{ color: '#4f46e5' }} />
-          <span>Edit Profile</span>
+          <span>Sửa hồ sơ</span>
         </div>
       }
       open={visible}
@@ -99,26 +99,26 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="username"
-            label="Username"
+            label="Tên đăng nhập"
             rules={[
-              { required: true, message: 'Please enter your username!' },
-              { min: 3, message: 'Username must be at least 3 characters!' },
+              { required: true, message: 'Vui lòng nhập tên đăng nhập!' },
+              { min: 3, message: 'Tên đăng nhập phải có ít nhất 3 ký tự!' },
             ]}
           >
             <Input
               prefix={<FontAwesomeIcon icon={faUser} style={{ color: '#9ca3af' }} />}
-              placeholder="Enter your username"
+              placeholder="Nhập tên đăng nhập"
               size="large"
             />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label="Email Address"
+            label="Email"
           >
             <Input
               prefix={<FontAwesomeIcon icon={faEnvelope} style={{ color: '#9ca3af' }} />}
-              placeholder="Email cannot be changed"
+              placeholder="Email không thể được thay đổi"
               size="large"
               disabled
             />
@@ -128,24 +128,24 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="mobileNumber"
-            label="Phone Number"
+            label="Số điện thoại"
             rules={[
-              { pattern: /^[0-9+\-\s()]+$/, message: 'Please enter a valid phone number!' },
+              { pattern: /^[0-9+\-\s()]+$/, message: 'Vui lòng nhập một số điện thoại hợp lệ!' },
             ]}
           >
             <Input
               prefix={<FontAwesomeIcon icon={faPhone} style={{ color: '#9ca3af' }} />}
-              placeholder="Enter your phone number"
+              placeholder="Nhập số điện thoại"
               size="large"
             />
           </Form.Item>
 
           <Form.Item
             name="dob"
-            label="Date of Birth"
+            label="Ngày sinh"
           >
             <DatePicker
-              placeholder="Select date of birth"
+              placeholder="Chọn ngày sinh"
               size="large"
               style={{ width: '100%' }}
               disabledDate={(current) => current && current > moment().endOf('day')}
@@ -156,26 +156,26 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="gender"
-            label="Gender"
+            label="Giới tính"
           >
             <Select
-              placeholder="Select your gender"
+              placeholder="Chọn giới tính"
               size="large"
               allowClear
             >
-              <Option value="male">Male</Option>
-              <Option value="female">Female</Option>
-              <Option value="other">Other</Option>
+              <Option value="male">Nam</Option>
+              <Option value="female">Nữ</Option>
+              <Option value="other">Khác</Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             name="location"
-            label="Location"
+            label="Địa chỉ"
           >
             <Input
               prefix={<FontAwesomeIcon icon={faMapMarkerAlt} style={{ color: '#9ca3af' }} />}
-              placeholder="Enter your location"
+              placeholder="Nhập địa chỉ"
               size="large"
             />
           </Form.Item>
@@ -183,12 +183,12 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
 
         <Form.Item
           name="profession"
-          label="Profession"
+          label="Nghề nghiệp"
           style={{ marginBottom: '16px' }}
         >
           <Input
             prefix={<FontAwesomeIcon icon={faBriefcase} style={{ color: '#9ca3af' }} />}
-            placeholder="Enter your profession"
+            placeholder="Nhập nghề nghiệp"
             size="large"
           />
         </Form.Item>
@@ -202,26 +202,26 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
             marginBottom: 16,
             background: '#fafbff'
           }}>
-            <div style={{ fontWeight: 600, color: '#4338ca', marginBottom: 12 }}>Instructor Profile</div>
+            <div style={{ fontWeight: 600, color: '#4338ca', marginBottom: 12 }}>Thông tin giảng viên</div>
 
             <Form.Item
               name="expertise"
-              label="Expertise"
+              label="Chuyên môn"
               rules={[{ required: true, message: 'Please enter your expertise!' }]}
             >
               <Input
                 prefix={<FontAwesomeIcon icon={faBriefcase} style={{ color: '#9ca3af' }} />}
-                placeholder="e.g. Java, Spring Boot, Microservices"
+                placeholder="Ví dụ: Java, Spring Boot, Microservices"
                 size="large"
               />
             </Form.Item>
 
             <Form.Item
               name="bio"
-              label="Bio"
+              label="Giới thiệu"
               rules={[{ min: 20, message: 'Bio should be at least 20 characters!' }]}
             >
-              <TextArea rows={4} placeholder="Introduce yourself, experience, achievements..." />
+              <TextArea rows={4} placeholder="Giới thiệu bản thân, kinh nghiệm, thành tựu..." />
             </Form.Item>
           </div>
         )}

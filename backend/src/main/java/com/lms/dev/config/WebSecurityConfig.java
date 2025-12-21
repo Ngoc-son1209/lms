@@ -59,9 +59,15 @@ public class WebSecurityConfig {
                         // Courses
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasAnyRole("ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.POST, "/api/courses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/courses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/courses/**").hasRole("ADMIN")
+
+                        // Classes (Admin CRUD) and public GET
+                        .requestMatchers(HttpMethod.GET, "/api/classes/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/classes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/classes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/classes/**").hasRole("ADMIN")
 
                         // Assessments, Enrollments, Feedback, Learning, Progress
                         .requestMatchers("/api/assessments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
@@ -69,7 +75,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/learning/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/progress/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/questions/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers(HttpMethod.POST, "/api/questions/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/questions/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/questions/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);

@@ -21,7 +21,7 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Questions> addQuestion(@RequestBody QuestionRequest request) {
         Questions question = questionService.addQuestion(request);

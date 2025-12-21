@@ -2,7 +2,6 @@ package com.lms.dev.service;
 
 import com.lms.dev.dto.InstructorAdminDTO;
 import com.lms.dev.dto.InstructorRegisterDTO;
-import com.lms.dev.dto.InstructorProfileDTO;
 import com.lms.dev.entity.Instructor;
 import com.lms.dev.entity.User;
 import com.lms.dev.enums.ApprovalStatus;
@@ -57,6 +56,7 @@ public class InstructorService {
                 .bio(dto.getBio())
                 .expertise(dto.getExpertise())
                 .status(ApprovalStatus.PENDING)
+                .user(user)
                 .build();
         instructorRepository.save(instructor);
     }
@@ -183,14 +183,16 @@ public class InstructorService {
             e.printStackTrace();
         }
 
-        // Xóa tài khoản và hồ sơ theo nghiệp vụ yêu cầu
+        // Xóa theo thứ tự an toàn với FK: xóa instructor trước, sau đó xóa user
         User user = userRepository.findByEmail(ins.getEmail());
+        // Lưu snapshot DTO trước khi xóa
+        InstructorAdminDTO snapshot = toAdminDTO(ins, user);
+        instructorRepository.delete(ins);
         if (user != null) {
             userRepository.delete(user);
         }
-        instructorRepository.delete(ins);
 
-        return Optional.of(toAdminDTO(ins, user));
+        return Optional.of(snapshot);
     }
 
     @Transactional
@@ -259,6 +261,7 @@ public class InstructorService {
                     .bio(dto.getBio())
                     .expertise(dto.getExpertise())
                     .status(com.lms.dev.enums.ApprovalStatus.PENDING)
+                    .user(user)
                     .build();
         } else {
             if (dto.getUsername() != null)
@@ -267,6 +270,8 @@ public class InstructorService {
                 ins.setBio(dto.getBio());
             if (dto.getExpertise() != null)
                 ins.setExpertise(dto.getExpertise());
+            if (ins.getUser() == null && user != null)
+                ins.setUser(user);
         }
         instructorRepository.save(ins);
         return getProfileByEmail(email);

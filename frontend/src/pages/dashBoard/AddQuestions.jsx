@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Select, 
-  Button, 
-  Typography, 
-  message, 
-  Row, 
+import {
+  Card,
+  Form,
+  Input,
+  Select,
+  Button,
+  Typography,
+  message,
+  Row,
   Col,
   Divider,
   Table,
@@ -16,14 +16,15 @@ import {
   Popconfirm
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faQuestionCircle, 
-  faArrowLeft, 
+import {
+  faQuestionCircle,
+  faArrowLeft,
   faPlus,
   faEdit,
   faTrash,
   faList
 } from '@fortawesome/free-solid-svg-icons';
+import { EditOutlined, RestOutlined } from "@ant-design/icons";
 import { adminService } from '../../api/admin.service';
 import { questionService } from '../../api/question.service';
 
@@ -42,7 +43,7 @@ function AddQuestion({ courseId, onBack }) {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false); // New state for Add Modal
   const [editForm] = Form.useForm();
-  
+
   useEffect(() => {
     fetchQuestions();
   }, [courseId]);
@@ -54,10 +55,10 @@ function AddQuestion({ courseId, onBack }) {
       if (result.success) {
         setQuestions(result.data);
       } else {
-        message.error(result.error || 'Failed to fetch questions');
+        message.error(result.error || 'Lỗi khi lấy câu hỏi');
       }
     } catch (error) {
-      message.error('Failed to fetch questions');
+      message.error('Lỗi khi lấy câu hỏi');
     } finally {
       setLoadingQuestions(false);
     }
@@ -77,7 +78,7 @@ function AddQuestion({ courseId, onBack }) {
     setLoading(true);
     try {
       const actualAnswerValue = getActualAnswerValue(values, values.answer);
-      
+
       const questionData = {
         question: values.question,
         option1: values.option1,
@@ -91,15 +92,15 @@ function AddQuestion({ courseId, onBack }) {
       const result = await adminService.createQuestion(questionData);
 
       if (result.success) {
-        message.success('Question added successfully!');
+        message.success('Thêm câu hỏi thành công!');
         form.resetFields();
         setIsAddModalVisible(false);
         fetchQuestions();
       } else {
-        message.error(result.error || 'Failed to add question');
+        message.error(result.error || 'Lỗi khi thêm câu hỏi');
       }
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error('Lỗi không xác định');
     } finally {
       setLoading(false);
     }
@@ -107,13 +108,13 @@ function AddQuestion({ courseId, onBack }) {
 
   const handleEdit = (question) => {
     setEditingQuestion(question);
-    
+
     let selectedAnswer = 'option1';
     if (question.answer === question.option1) selectedAnswer = 'option1';
     else if (question.answer === question.option2) selectedAnswer = 'option2';
     else if (question.answer === question.option3) selectedAnswer = 'option3';
     else if (question.answer === question.option4) selectedAnswer = 'option4';
-    
+
     editForm.setFieldsValue({
       question: question.question,
       option1: question.option1,
@@ -127,10 +128,10 @@ function AddQuestion({ courseId, onBack }) {
 
   const handleEditSubmit = async (values) => {
     if (!editingQuestion) return;
-    
+
     try {
       const actualAnswerValue = getActualAnswerValue(values, values.answer);
-      
+
       const questionData = {
         question: values.question,
         option1: values.option1,
@@ -144,16 +145,16 @@ function AddQuestion({ courseId, onBack }) {
       const result = await adminService.updateQuestion(editingQuestion.id, questionData);
 
       if (result.success) {
-        message.success('Question updated successfully!');
+        message.success('Câu hỏi đã được cập nhật thành công!');
         setIsEditModalVisible(false);
         setEditingQuestion(null);
         editForm.resetFields();
         fetchQuestions();
       } else {
-        message.error(result.error || 'Failed to update question');
+        message.error(result.error || 'Lỗi khi cập nhật câu hỏi');
       }
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error('Lỗi không xác định');
     }
   };
 
@@ -161,13 +162,13 @@ function AddQuestion({ courseId, onBack }) {
     try {
       const result = await adminService.deleteQuestion(questionId);
       if (result.success) {
-        message.success('Question deleted successfully!');
+        message.success('Câu hỏi đã được xóa thành công!');
         fetchQuestions();
       } else {
-        message.error(result.error || 'Failed to delete question');
+        message.error(result.error || 'Lỗi khi xóa câu hỏi');
       }
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error('Lỗi không xác định');
     }
   };
 
@@ -177,7 +178,7 @@ function AddQuestion({ courseId, onBack }) {
 
   const columns = [
     {
-      title: 'Question',
+      title: 'Câu hỏi',
       dataIndex: 'question',
       key: 'question',
       width: '85%',
@@ -188,31 +189,39 @@ function AddQuestion({ courseId, onBack }) {
       ),
     },
     {
-      title: 'Actions',
+      title: 'Câu trả lời',
+      dataIndex: 'answer',
+      key: 'answer',
+      width: '85%',
+      render: (text) => (
+        <div>
+          <Text ellipsis={{ tooltip: text }}>{text}</Text>
+        </div>
+      ),
+    },
+    {
+      title: 'Hành động',
       key: 'actions',
       render: (_, record) => (
         <div className="flex gap-2">
           <Button
-            type="text"
+            type="primary"
+            icon={<EditOutlined />}
             size="small"
             onClick={() => handleEdit(record)}
-            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-          >
-            <FontAwesomeIcon icon={faEdit} />
+          > Sửa
           </Button>
           <Popconfirm
-            title="Delete Question"
-            description="Are you sure you want to delete this question?"
+            title="Xóa câu hỏi"
+            description="Bạn có chắc chắn muốn xóa câu hỏi này?"
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText="Có"
+            cancelText="Không"
           >
             <Button
-              type="text"
+              danger icon={<RestOutlined />}
               size="small"
-              className="text-red-600 hover:text-red-800 hover:bg-red-50"
-            >
-              <FontAwesomeIcon icon={faTrash} />
+            > Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -230,16 +239,16 @@ function AddQuestion({ courseId, onBack }) {
       initialValues={initialValues}
     >
       <Form.Item
-        label="Question"
+        label="Câu hỏi"
         name="question"
         rules={[
-          { required: true, message: 'Please enter the question' },
-          { min: 10, message: 'Question must be at least 10 characters' },
-          { max: 500, message: 'Question cannot exceed 500 characters' }
+          { required: true, message: 'Vui lòng nhập câu hỏi' },
+          { min: 10, message: 'Câu hỏi phải có ít nhất 10 ký tự' },
+          { max: 500, message: 'Câu hỏi không được vượt quá 500 ký tự' }
         ]}
       >
         <TextArea
-          placeholder="Enter your question here..."
+          placeholder="Nhập câu hỏi của bạn ở đây..."
           rows={3}
           className="rounded-lg"
           showCount
@@ -253,11 +262,11 @@ function AddQuestion({ courseId, onBack }) {
             label="Option A"
             name="option1"
             rules={[
-              { required: true, message: 'Option A is required' },
-              { max: 200, message: 'Option cannot exceed 200 characters' }
+              { required: true, message: 'Option A là bắt buộc' },
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
             ]}
           >
-            <Input placeholder="Enter option A" className="rounded-lg" />
+            <Input placeholder="Nhập option A" className="rounded-lg" />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -265,11 +274,11 @@ function AddQuestion({ courseId, onBack }) {
             label="Option B"
             name="option2"
             rules={[
-              { required: true, message: 'Option B is required' },
-              { max: 200, message: 'Option cannot exceed 200 characters' }
+              { required: true, message: 'Option B là bắt buộc' },
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
             ]}
           >
-            <Input placeholder="Enter option B" className="rounded-lg" />
+            <Input placeholder="Nhập option B" className="rounded-lg" />
           </Form.Item>
         </Col>
       </Row>
@@ -280,11 +289,11 @@ function AddQuestion({ courseId, onBack }) {
             label="Option C"
             name="option3"
             rules={[
-              { required: true, message: 'Option C is required' },
-              { max: 200, message: 'Option cannot exceed 200 characters' }
+              { required: true, message: 'Option C là bắt buộc' },
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
             ]}
           >
-            <Input placeholder="Enter option C" className="rounded-lg" />
+            <Input placeholder="Nhập option C" className="rounded-lg" />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -292,21 +301,21 @@ function AddQuestion({ courseId, onBack }) {
             label="Option D"
             name="option4"
             rules={[
-              { required: true, message: 'Option D is required' },
-              { max: 200, message: 'Option cannot exceed 200 characters' }
+              { required: true, message: 'Option D là bắt buộc' },
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
             ]}
           >
-            <Input placeholder="Enter option D" className="rounded-lg" />
+            <Input placeholder="Nhập option D" className="rounded-lg" />
           </Form.Item>
         </Col>
       </Row>
 
       <Form.Item
-        label="Correct Answer"
+        label="Câu trả lời đúng"
         name="answer"
-        rules={[{ required: true, message: 'Please select the correct answer' }]}
+        rules={[{ required: true, message: 'Vui lòng chọn câu trả lời đúng' }]}
       >
-        <Select placeholder="Select the correct answer" className="rounded-lg">
+        <Select placeholder="Chọn câu trả lời đúng" className="rounded-lg">
           <Option value="option1">Option A</Option>
           <Option value="option2">Option B</Option>
           <Option value="option3">Option C</Option>
@@ -327,7 +336,7 @@ function AddQuestion({ courseId, onBack }) {
           }}
           className="rounded-lg px-6"
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="primary"
@@ -335,7 +344,7 @@ function AddQuestion({ courseId, onBack }) {
           loading={loading}
           className="bg-blue-600 hover:bg-blue-700 rounded-lg px-6"
         >
-          <FontAwesomeIcon icon={faPlus} className="mr-2" />
+          {/* <FontAwesomeIcon icon={faPlus} className="mr-2" /> */}
           {submitText}
         </Button>
       </div>
@@ -360,7 +369,7 @@ function AddQuestion({ courseId, onBack }) {
               <div>
                 <Title level={2} className="!mb-0 !text-gray-900">
                   <FontAwesomeIcon icon={faQuestionCircle} className="mr-3 text-blue-600" />
-                  Question Management
+                  Quản lý câu hỏi
                 </Title>
               </div>
             </div>
@@ -372,7 +381,7 @@ function AddQuestion({ courseId, onBack }) {
               className="bg-blue-600 hover:bg-blue-700 rounded-lg px-6 h-12 font-semibold"
             >
               <FontAwesomeIcon icon={faPlus} className="mr-2" />
-              Add New Question
+              Thêm câu hỏi
             </Button>
           </div>
         </Card>
@@ -382,7 +391,7 @@ function AddQuestion({ courseId, onBack }) {
           <div className="flex items-center justify-between mb-6">
             <Title level={3} className="!mb-0 !text-gray-800">
               <FontAwesomeIcon icon={faList} className="mr-2 text-green-600" />
-              Existing Questions ({questions.length})
+              Danh sách câu hỏi ({questions.length})
             </Title>
           </div>
 
@@ -406,7 +415,7 @@ function AddQuestion({ courseId, onBack }) {
           title={
             <div className="flex items-center gap-3">
               <FontAwesomeIcon icon={faPlus} className="text-blue-600" />
-              <span>Add New Question</span>
+              <span>Thêm câu hỏi</span>
             </div>
           }
           open={isAddModalVisible}
@@ -422,7 +431,7 @@ function AddQuestion({ courseId, onBack }) {
             form={form}
             onFinish={handleSubmit}
             loading={loading}
-            submitText={loading ? 'Adding...' : 'Add Question'}
+            submitText={loading ? 'Thêm câu hỏi...' : 'Thêm câu hỏi'}
           />
         </Modal>
 
@@ -431,7 +440,7 @@ function AddQuestion({ courseId, onBack }) {
           title={
             <div className="flex items-center gap-3">
               <FontAwesomeIcon icon={faEdit} className="text-blue-600" />
-              <span>Edit Question</span>
+              <span>Cập nhật câu hỏi</span>
             </div>
           }
           open={isEditModalVisible}
@@ -448,7 +457,7 @@ function AddQuestion({ courseId, onBack }) {
             form={editForm}
             onFinish={handleEditSubmit}
             loading={false}
-            submitText="Update Question"
+            submitText="Cập nhật"
           />
         </Modal>
       </div>

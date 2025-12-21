@@ -32,7 +32,7 @@ function Navbar(props) {
             to={"/"}
             className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
           >
-            Home
+            Trang chủ
           </Link>
         </li>
       ) : (
@@ -41,7 +41,7 @@ function Navbar(props) {
             to={"/"}
             className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
           >
-            Home
+            Trang chủ
           </Link>
         </li>
       )}
@@ -52,7 +52,7 @@ function Navbar(props) {
             to={"/courses"}
             className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
           >
-            Courses
+            Khóa học
           </Link>
         </li>
       ) : (
@@ -61,7 +61,7 @@ function Navbar(props) {
             to={"/courses"}
             className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
           >
-            Courses
+            Khóa học
           </Link>
         </li>
       )}
@@ -74,7 +74,7 @@ function Navbar(props) {
                 to={"/profile"}
                 className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
               >
-                Profile
+                Hồ sơ
                 <FontAwesomeIcon icon={faUser} className="ml-1" />
               </Link>
             </li>
@@ -84,7 +84,7 @@ function Navbar(props) {
                 to={"/profile"}
                 className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
               >
-                Profile
+                Hồ sơ
                 <FontAwesomeIcon icon={faUser} className="ml-1" />
               </Link>
             </li>
@@ -96,7 +96,7 @@ function Navbar(props) {
                 to={"/learnings"}
                 className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
               >
-                Learnings
+                Học tập
                 <FontAwesomeIcon icon={faChalkboardUser} className="ml-1" />
               </Link>
             </li>
@@ -106,7 +106,7 @@ function Navbar(props) {
                 to={"/learnings"}
                 className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
               >
-                Learnings
+                Học tập
                 <FontAwesomeIcon icon={faChalkboardUser} className="ml-1" />
               </Link>
             </li>
@@ -122,13 +122,13 @@ function Navbar(props) {
       {value === "home" ? (
         <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
           <Link to={"/"} className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400">
-            Home
+            Trang chủ
           </Link>
         </li>
       ) : (
         <li className="list-none ml-5">
           <Link to={"/"} className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400">
-            Home
+            Trang chủ
           </Link>
         </li>
       )}
@@ -137,13 +137,28 @@ function Navbar(props) {
       {value === "instructor-courses" ? (
         <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
           <Link to={"/instructor/courses"} className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400">
-            Courses
+            Khóa học
           </Link>
         </li>
       ) : (
         <li className="list-none ml-5">
           <Link to={"/instructor/courses"} className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400">
-            Courses
+            Khóa học
+          </Link>
+        </li>
+      )}
+
+      {/* Classes Link */}
+      {value === "instructor-classes" ? (
+        <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
+          <Link to={"/instructor/classes"} className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400">
+            Lớp học
+          </Link>
+        </li>
+      ) : (
+        <li className="list-none ml-5">
+          <Link to={"/instructor/classes"} className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400">
+            Lớp học
           </Link>
         </li>
       )}
@@ -152,13 +167,13 @@ function Navbar(props) {
       {value === "instructor-students" ? (
         <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
           <Link to={"/instructor/students"} className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400">
-            Students
+            Học viên
           </Link>
         </li>
       ) : (
         <li className="list-none ml-5">
           <Link to={"/instructor/students"} className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400">
-            Students
+            Học viên
           </Link>
         </li>
       )}
@@ -167,14 +182,14 @@ function Navbar(props) {
       {value === "profile" ? (
         <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
           <Link to={"/profile"} className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400">
-            Profile
+            Hồ sơ
             <FontAwesomeIcon icon={faUser} className="ml-1" />
           </Link>
         </li>
       ) : (
         <li className="list-none ml-5">
           <Link to={"/profile"} className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400">
-            Profile
+            Hồ sơ
             <FontAwesomeIcon icon={faUser} className="ml-1" />
           </Link>
         </li>
@@ -213,7 +228,7 @@ function Navbar(props) {
                   onClick={handleLogOut}
                   className="w-[120px] h-[35px] p-[1px] mb-[1px] bg-[#0047ca] border-none rounded-lg text-[rgb(250,250,250)] text-[15px] font-medium cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#002c5fe1]"
                 >
-                  Sign Out
+                  Đăng xuất
                 </button>
               </li>
             ) : (
@@ -222,7 +237,7 @@ function Navbar(props) {
                   onClick={() => navigate("/login")}
                   className="w-[120px] h-[35px] p-[1px] mb-[1px] bg-[#0047ca] border-none rounded-lg text-[rgb(250,250,250)] text-[15px] font-medium cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#002c5fe1]"
                 >
-                  Login/SignUp
+                  Đăng nhập
                 </button>
               </li>
             )}

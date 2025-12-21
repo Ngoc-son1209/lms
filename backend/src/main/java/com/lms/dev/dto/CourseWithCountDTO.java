@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -13,12 +14,12 @@ import java.util.UUID;
 @Builder
 public class CourseWithCountDTO {
     private UUID course_id;
-    private UUID instructorId;
     private String course_name;
     private Integer price;
-    private String instructor;
     private String description;
     private String p_link;
     private String y_link;
+    private LocalDate startAt;
+    private LocalDate endAt;
     private long studentCount;
 }

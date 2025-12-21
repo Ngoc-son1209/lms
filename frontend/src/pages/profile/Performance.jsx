@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  faAward, 
-  faDownload, 
-  faTrophy, 
-  faChartLine, 
-  faCheckCircle, 
-  faClock, 
+import {
+  faAward,
+  faDownload,
+  faTrophy,
+  faChartLine,
+  faCheckCircle,
+  faClock,
   faGraduationCap,
   faStar
 } from '@fortawesome/free-solid-svg-icons';
@@ -24,7 +24,7 @@ const Performance = () => {
       setLoading(true);
       const userId = localStorage.getItem("id");
       const result = await performanceService.getPerformanceData(userId);
-      
+
       if (result.success) {
         setPerformanceData(result.data);
       } else {
@@ -41,9 +41,9 @@ const Performance = () => {
     const userId = localStorage.getItem("id");
 
     console.log(courseId);
-    
+
     navigate(`/certificate/${courseId}`);
-    
+
     setDownloadingCert(null);
   };
 
@@ -63,10 +63,10 @@ const Performance = () => {
   const calculateStats = () => {
     const completed = performanceData.filter(data => data.marks > 0).length;
     const totalCourses = performanceData.length;
-    const avgScore = performanceData.length > 0 
-      ? performanceData.reduce((sum, data) => sum + data.marks, 0) / performanceData.length 
+    const avgScore = performanceData.length > 0
+      ? performanceData.reduce((sum, data) => sum + data.marks, 0) / performanceData.length
       : 0;
-    
+
     return { completed, totalCourses, avgScore: Math.round(avgScore) };
   };
 
@@ -92,9 +92,9 @@ const Performance = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Completed Courses</p>
+                <p className="text-sm font-medium text-gray-600">Khóa học đã hoàn thành</p>
                 <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
-                <p className="text-sm text-gray-500">out of {stats.totalCourses}</p>
+                <p className="text-sm text-gray-500">trên tổng số {stats.totalCourses}</p>
               </div>
               <div className="bg-green-100 p-3 rounded-full">
                 <FontAwesomeIcon icon={faCheckCircle} className="text-2xl text-green-600" />
@@ -105,9 +105,9 @@ const Performance = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Average Score</p>
+                <p className="text-sm font-medium text-gray-600">Điểm trung bình</p>
                 <p className="text-3xl font-bold text-indigo-600">{stats.avgScore}%</p>
-                <p className="text-sm text-gray-500">across all courses</p>
+                <p className="text-sm text-gray-500">trên tất cả khóa học</p>
               </div>
               <div className="bg-indigo-100 p-3 rounded-full">
                 <FontAwesomeIcon icon={faChartLine} className="text-2xl text-indigo-600" />
@@ -118,9 +118,9 @@ const Performance = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Certificates Earned</p>
+                <p className="text-sm font-medium text-gray-600">Chứng chỉ đã nhận</p>
                 <p className="text-3xl font-bold text-purple-600">{stats.completed}</p>
-                <p className="text-sm text-gray-500">ready for download</p>
+                <p className="text-sm text-gray-500">sẵn sàng để tải xuống</p>
               </div>
               <div className="bg-purple-100 p-3 rounded-full">
                 <FontAwesomeIcon icon={faAward} className="text-2xl text-purple-600" />
@@ -134,7 +134,7 @@ const Performance = () => {
           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
             <h2 className="text-2xl font-bold text-white flex items-center gap-2">
               <FontAwesomeIcon icon={faTrophy} />
-              Course Performance
+              Thành tích
             </h2>
           </div>
 
@@ -184,7 +184,7 @@ const Performance = () => {
                             </div>
                           </div>
                         </td>
-                        
+
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           {data.marks > 0 ? (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -198,7 +198,7 @@ const Performance = () => {
                             </span>
                           )}
                         </td>
-                        
+
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           {data.marks > 0 ? (
                             <div className="flex items-center justify-center gap-2">
@@ -211,7 +211,7 @@ const Performance = () => {
                             <span className="text-gray-400 font-medium">—</span>
                           )}
                         </td>
-                        
+
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           {data.marks > 0 ? (
                             <button
@@ -246,16 +246,16 @@ const Performance = () => {
               <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
                 <FontAwesomeIcon icon={faChartLine} className="h-full w-full" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Performance Data Yet</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Không có dữ liệu thành tích</h3>
               <p className="text-gray-500 mb-6">
-                Start taking assessments to see your performance metrics here.
+                Bắt đầu làm bài kiểm tra để xem thành tích của bạn ở đây.
               </p>
               <button
                 onClick={() => navigate('/courses')}
                 className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg"
               >
                 <FontAwesomeIcon icon={faGraduationCap} className="mr-2" />
-                Browse Courses
+                Xem khóa học
               </button>
             </div>
           )}
@@ -266,7 +266,7 @@ const Performance = () => {
           <div className="mt-10 text-center">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full shadow-lg">
               <FontAwesomeIcon icon={faAward} className="mr-2 text-xl" />
-              🎉 Congratulations! You've completed {stats.completed} course{stats.completed > 1 ? 's' : ''}!
+              🎉 Chúc mừng! Bạn đã hoàn thành {stats.completed} khóa học{stats.completed > 1 ? 's' : ''}!
             </div>
           </div>
         )}

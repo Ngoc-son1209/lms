@@ -37,7 +37,7 @@ const Feedback = ({ courseid }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 mt-10">
-      <h3 className="text-xl font-bold text-neutral mb-4">Feedback</h3>
+      <h3 className="text-xl font-bold text-neutral mb-4">Phản hồi khóa học</h3>
 
       {/* Feedback List */}
       <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
@@ -55,7 +55,7 @@ const Feedback = ({ courseid }) => {
             </div>
           ))
         ) : (
-          <p className="text-gray-500 italic">No feedback yet. Be the first!</p>
+          <p className="text-gray-500 italic">Chưa có phản hồi nào. Hãy là người đầu tiên!</p>
         )}
       </div>
 

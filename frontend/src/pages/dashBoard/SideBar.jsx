@@ -3,10 +3,10 @@ import { authService } from "../../api/auth.service";
 
 function SideBar({ current, onSelect }) {
   const menuItems = [
-    { key: "dashboard", label: "Dashboard", icon: "bx bxs-dashboard" },
-    { key: "user", label: "Users", icon: "bx bxs-group" },
-    { key: "courses", label: "Courses", icon: "bx bxs-book" },
-    { key: "instructors", label: "Instructors", icon: "bx bxs-user-voice" },
+    { key: "dashboard", label: "Tổng quan", icon: "bx bxs-dashboard" },
+    { key: "user", label: "Học viên", icon: "bx bxs-group" },
+    { key: "courses", label: "Khóa học", icon: "bx bxs-book" },
+    { key: "instructors", label: "Giảng viên", icon: "bx bxs-user-voice" },
   ];
 
   const handleLogout = async () => {
@@ -45,7 +45,7 @@ function SideBar({ current, onSelect }) {
           onClick={handleLogout}
           className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white rounded-lg py-2 font-medium transition-colors"
         >
-          Sign Out
+          Đăng xuất
         </button>
       </div>
     </div>

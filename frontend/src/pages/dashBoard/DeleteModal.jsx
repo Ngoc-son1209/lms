@@ -10,8 +10,8 @@ function DeleteModal({
   onDelete,
   item = null,
   itemType = "item",
-  title = "Delete Confirmation",
-  description = "Are you sure you want to delete this item?",
+  title = "Xác nhận xóa",
+  description = "Bạn chắc chắn muốn xóa mục này?",
   itemDisplayName = "",
   customContent = null,
 }) {
@@ -19,23 +19,23 @@ function DeleteModal({
 
   const handleDelete = async () => {
     if (!onDelete) {
-      message.error("Delete function not provided");
+      message.error("Hàm xóa không được cung cấp");
       return;
     }
 
     setLoading(true);
     try {
       const result = await onDelete(item);
-      
+
       if (result && result.success === false) {
         message.error(result.error || `Failed to delete ${itemType}`);
       } else {
-        message.success(`${itemType} deleted successfully!`);
+        message.success(`${itemType} đã được xóa thành công!`);
         onClose();
         onSuccess?.(); // Callback to refresh data
       }
     } catch (error) {
-      message.error(`Failed to delete ${itemType}`);
+      message.error(`Không thể xóa ${itemType}`);
       console.error("Delete error:", error);
     } finally {
       setLoading(false);
@@ -51,8 +51,8 @@ function DeleteModal({
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">
           <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-            <FontAwesomeIcon 
-              icon={faExclamationTriangle} 
+            <FontAwesomeIcon
+              icon={faExclamationTriangle}
               className="text-red-600 text-xl"
             />
           </div>
@@ -73,7 +73,7 @@ function DeleteModal({
               )}
             </p>
             <p className="text-sm text-red-600 font-medium">
-              ⚠️ This action cannot be undone.
+              ⚠️ Hành động này không thể được hoàn tác.
             </p>
           </div>
         </div>
@@ -93,7 +93,7 @@ function DeleteModal({
     >
       <div className="p-2">
         {renderContent()}
-        
+
         <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-200">
           <button
             type="button"

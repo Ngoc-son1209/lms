@@ -1,5 +1,6 @@
 package com.lms.dev.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lms.dev.enums.ApprovalStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +30,11 @@ public class Instructor {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", columnDefinition = "BINARY(16)", unique = true, nullable = false)
+    @JsonIgnore
+    private User user;
 
     @NotBlank
     @Column(columnDefinition = "TEXT")

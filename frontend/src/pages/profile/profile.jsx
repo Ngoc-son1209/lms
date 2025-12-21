@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/common/Navbar";
 import ImgUpload from "./ImgUpload";
 import Performance from "./Performance";
@@ -108,8 +107,8 @@ function Profile() {
   };
 
   const getGenderIcon = (gender) => {
-    if (gender?.toLowerCase() === 'female') return faVenus;
-    if (gender?.toLowerCase() === 'male') return faMars;
+    if (gender?.toLowerCase() === 'Nữ') return faVenus;
+    if (gender?.toLowerCase() === 'Nam') return faMars;
     return faUser;
   };
 
@@ -172,7 +171,7 @@ function Profile() {
                     className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
                   >
                     <FontAwesomeIcon icon={faEdit} className="mr-2" />
-                    Edit Profile
+                    Sửa hồ sơ
                   </button>
                 </div>
               </div>
@@ -217,7 +216,7 @@ function Profile() {
                     }`}
                 >
                   <FontAwesomeIcon icon={faUser} />
-                  Overview
+                  Tổng quan
                 </button>
                 <button
                   onClick={() => setActiveTab("performance")}
@@ -227,7 +226,7 @@ function Profile() {
                     }`}
                 >
                   <FontAwesomeIcon icon={faTrophy} />
-                  Performance
+                  Thành tích
                 </button>
               </div>
             )}
@@ -239,51 +238,51 @@ function Profile() {
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <FontAwesomeIcon icon={faUser} className="text-indigo-600" />
-                Personal Information
+                Thông tin cá nhân
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InfoCard
                   icon={faEnvelope}
-                  label="Email Address"
+                  label="Email"
                   value={userDetails?.email}
                   iconColor="text-red-500"
                 />
                 <InfoCard
                   icon={faPhone}
-                  label="Phone Number"
+                  label="Số điện thoại"
                   value={userDetails?.mobileNumber}
                   iconColor="text-green-500"
                 />
                 <InfoCard
                   icon={getGenderIcon(userDetails?.gender)}
-                  label="Gender"
+                  label="Giới tính"
                   value={userDetails?.gender}
                   iconColor="text-purple-500"
                 />
                 <InfoCard
                   icon={faCalendar}
-                  label="Date of Birth"
+                  label="Ngày sinh"
                   value={userDetails?.dob}
                   iconColor="text-blue-500"
                 />
                 <InfoCard
                   icon={faBriefcase}
-                  label="Profession"
+                  label="Nghề nghiệp"
                   value={userDetails?.profession}
                   iconColor="text-orange-500"
                 />
                 {isInstructor ? (
                   <InfoCard
                     icon={faBookOpen}
-                    label="Expertise"
+                    label="Chuyên môn"
                     value={userDetails?.expertise}
                     iconColor="text-indigo-500"
                   />
                 ) : (
                   <InfoCard
                     icon={faBookOpen}
-                    label="Learning Courses"
+                    label="Khóa học đang học"
                     value={userDetails?.learningCourses?.length || 0}
                     iconColor="text-indigo-500"
                   />
@@ -317,7 +316,7 @@ function InfoCard({ icon, label, value, iconColor = "text-gray-400" }) {
         <div className="flex-1">
           <h4 className="text-sm font-medium text-gray-600 mb-1">{label}</h4>
           <p className="text-gray-900 group-hover:text-indigo-600 transition-colors">
-            {value || "Not specified"}
+            {value || "Không xác định"}
           </p>
         </div>
       </div>

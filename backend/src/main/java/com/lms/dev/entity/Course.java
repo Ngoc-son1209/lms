@@ -1,5 +1,6 @@
 package com.lms.dev.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,23 +25,22 @@ public class Course {
     @Column(name = "course_id", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
     private UUID course_id;
 
-    // Link to instructor (User.id)
-    @Column(name = "instructor_id", columnDefinition = "BINARY(16)")
-    private UUID instructorId;
-
     @JsonProperty("course_name")
     private String course_name;
 
     private int price;
-
-    // Display name/email of instructor
-    private String instructor;
 
     private String description;
 
     private String p_link;
 
     private String y_link;
+
+    @Column(name = "start_at")
+    private LocalDate startAt;
+
+    @Column(name = "end_at")
+    private LocalDate endAt;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     @JsonIgnore

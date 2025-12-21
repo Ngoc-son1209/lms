@@ -194,13 +194,13 @@ const Course = () => {
               Take assessments to reinforce your learning and get valuable feedback.
             </p>
 
-            {progressPercent >= 98 ? (
+            {progressPercent >= 80 ? (
               <button
                 onClick={() => navigate(`/assessment/${course.course_id}`)}
                 className="w-full py-2 bg-accent text-white rounded-lg font-semibold hover:bg-accent/90 transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
               >
                 <Award className="w-4 h-4" />
-                Take Quiz
+                Làm bài kiểm tra
               </button>
             ) : (
               <button
@@ -217,15 +217,15 @@ const Course = () => {
         <div className="mt-8 bg-white shadow-2xl rounded-xl p-6">
           <div className="flex items-center gap-2 mb-3">
             <BookOpen className="w-5 h-5 text-primary" />
-            <h4 className="text-lg font-semibold text-neutral">Description</h4>
+            <h4 className="text-lg font-semibold text-neutral">Mô tả</h4>
           </div>
-          <p className="text-gray-600 italic">{course.description}</p>
+          <p className="text-left text-gray-600 italic">{course.description}</p>
         </div>
 
         <div className="mt-8 bg-white shadow-2xl rounded-xl p-6">
           <div className="flex items-center gap-2 mb-3">
             <Clock className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-neutral">Progress</h3>
+            <h3 className="text-lg font-semibold text-neutral">Tiến độ</h3>
           </div>
           {progressLoading ? (
             <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ const Course = () => {
                 strokeColor="#6366f1"
               />
               <p className="mt-2 text-sm text-gray-600">
-                You have completed <span className="font-semibold">{progressPercent}%</span> of this course.
+                Bạn đã hoàn thành <span className="font-semibold">{progressPercent}%</span> của khóa học này.
               </p>
             </>
           )}
@@ -252,7 +252,7 @@ const Course = () => {
             onClick={() => setIsDiscussionOpen(true)}
           >
             <MessageSquare className="w-4 h-4" />
-            Discussion
+            Diễn đàn
           </button>
         </div>
 
@@ -262,14 +262,14 @@ const Course = () => {
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
         >
-          <p className="text-neutral font-semibold">Complete 100% of your course to unlock the quiz.</p>
+          <p className="text-neutral font-semibold">Complete 80% of your course to unlock the quiz.</p>
         </Modal>
 
         <Modal
           title={
             <div className="flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-primary" />
-              Discussion Forum
+              Diễn đàn
             </div>
           }
           open={isDiscussionOpen}

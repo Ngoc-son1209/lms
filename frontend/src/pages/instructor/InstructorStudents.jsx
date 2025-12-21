@@ -4,23 +4,23 @@ import { adminService } from "../../api/admin.service";
 import { authService } from "../../api/auth.service";
 import { Card, Table, message, Progress } from "antd";
 import SearchFilter from "../../Components/common/SearchFilter";
-import { progressService } from "../../api/progress.service";
 
 export default function InstructorStudents() {
     const [courses, setCourses] = useState([]);
-    // selected course id is kept in filters.courseId
+    const [classes, setClasses] = useState([]);
     const [loadingCourses, setLoadingCourses] = useState(false);
+    const [loadingClasses, setLoadingClasses] = useState(false);
     const [loadingStudents, setLoadingStudents] = useState(false);
-    const [students, setStudents] = useState([]);
     const [rows, setRows] = useState([]);
-    const [filters, setFilters] = useState({ keyword: "", courseId: "" });
+    const [filters, setFilters] = useState({ keyword: "", courseId: "", classSectionId: "" });
 
     const currentUser = authService.getCurrentUser();
 
+    // Load courses on mount
     useEffect(() => {
         const load = async () => {
             setLoadingCourses(true);
-            const res = await adminService.getMyCourses();
+            const res = await adminService.getAllCourses();
             if (res.success) setCourses(res.data || []);
             else message.error(res.error || "Không tải được khóa học");
             setLoadingCourses(false);
@@ -28,42 +28,36 @@ export default function InstructorStudents() {
         load();
     }, []);
 
-    const myCourses = useMemo(() => {
-        const email = currentUser?.email;
-        if (!email) return courses;
-        const mine = (courses || []).filter((c) => String(c.instructor || "").toLowerCase() === String(email).toLowerCase());
-        return mine.length > 0 ? mine : courses;
-    }, [courses, currentUser]);
+    // Load classes when course changes
+    useEffect(() => {
+        const loadClasses = async () => {
+            if (!filters.courseId) {
+                setClasses([]);
+                return;
+            }
+            setLoadingClasses(true);
+            const res = await adminService.getInstructorClasses(filters.courseId);
+            if (res.success) setClasses(res.data || []);
+            else message.error(res.error || "Không tải được danh sách lớp");
+            setLoadingClasses(false);
+        };
+        loadClasses();
+    }, [filters.courseId]);
 
+    // Load students when filters change
     useEffect(() => {
         const loadStudents = async () => {
-            const selectedCourse = filters.courseId;
-            if (!selectedCourse) return;
             setLoadingStudents(true);
-            const res = await adminService.getStudentsByCourse(selectedCourse);
+            const res = await adminService.getInstructorStudents(filters.courseId, filters.classSectionId);
             if (res.success) {
-                const base = res.data || [];
-                const detailed = await Promise.all(
-                    base.map(async (s) => {
-                        try {
-                            const d = await progressService.getProgressDetail(s.id, selectedCourse);
-                            if (d.success) {
-                                const played = d.data?.playedTime || 0;
-                                const duration = d.data?.duration || 0;
-                                const percent = duration > 0 ? Math.min(100, Math.ceil((played / duration) * 100)) : 0;
-                                return { ...s, progressPercent: percent, score: d.data?.marks ?? null };
-                            }
-                        } catch (e) { }
-                        return { ...s, progressPercent: 0, score: null };
-                    })
-                );
-                setStudents(base);
-                setRows(detailed);
-            } else message.error(res.error || "Không tải được học viên");
+                setRows(res.data || []);
+            } else {
+                message.error(res.error || "Không tải được học viên");
+            }
             setLoadingStudents(false);
         };
         loadStudents();
-    }, [filters.courseId]);
+    }, [filters.courseId, filters.classSectionId]);
 
     const filteredRows = useMemo(() => {
         const kw = (filters.keyword || "").toLowerCase().trim();
@@ -76,21 +70,24 @@ export default function InstructorStudents() {
     }, [rows, filters]);
 
     const columns = [
-        { title: "Họ tên", dataIndex: "username", key: "username" },
-        { title: "Email", dataIndex: "email", key: "email" },
-        { title: "Số điện thoại", dataIndex: "mobileNumber", key: "mobileNumber", render: (v) => v || "N/A" },
+        { title: "Họ tên", dataIndex: "username", key: "username", width: 150 },
+        { title: "Email", dataIndex: "email", key: "email", width: 200 },
+        { title: "Số điện thoại", dataIndex: "mobileNumber", key: "mobileNumber", width: 130, render: (v) => v || "N/A" },
+        { title: "Lớp", dataIndex: "className", key: "className", width: 120, render: (v) => v || "N/A" },
+        { title: "Mã lớp", dataIndex: "classCode", key: "classCode", width: 100, render: (v) => v || "N/A" },
+        { title: "Khóa học", dataIndex: "courseName", key: "courseName", width: 180 },
         {
             title: "Progress",
             dataIndex: "progressPercent",
             key: "progressPercent",
-            width: 160,
+            width: 140,
             render: (p) => (
-                <div className="min-w-[140px]">
+                <div className="min-w-[120px]">
                     <Progress percent={p || 0} size="small" status={(p || 0) === 100 ? "success" : "active"} />
                 </div>
             ),
         },
-        { title: "Score", dataIndex: "score", key: "score", render: (v) => (v === null || v === undefined ? "N/A" : v) },
+        { title: "Score", dataIndex: "score", key: "score", width: 80, render: (v) => (v === null || v === undefined ? "N/A" : v) },
     ];
 
     return (
@@ -103,12 +100,28 @@ export default function InstructorStudents() {
                         <p className="text-slate-600">View and manage students by course</p>
                     </div>
 
-                    {/* Search bar with course select + keyword in one row */}
+                    {/* Search bar with course select, class select + keyword */}
                     <Card className="shadow-xl mb-4">
                         <SearchFilter
                             fields={[
-                                { type: "input", name: "keyword", label: "Tên/Email/SĐT", placeholder: "Tên/Email/SĐT" },
-                                { type: "select", name: "courseId", label: "Chọn khóa học", placeholder: "Chọn khóa học", options: (myCourses || []).map((c) => ({ label: c.course_name, value: c.course_id })) }
+                                { type: "input", name: "keyword", label: "Tên/Email/SĐT", placeholder: "Tìm kiếm học viên..." },
+                                {
+                                    type: "select",
+                                    name: "courseId",
+                                    label: "Khóa học",
+                                    placeholder: "Chọn khóa học",
+                                    options: (courses || []).map((c) => ({ label: c.course_name, value: c.course_id })),
+                                    allowClear: true
+                                },
+                                {
+                                    type: "select",
+                                    name: "classSectionId",
+                                    label: "Lớp học",
+                                    placeholder: "Chọn lớp học",
+                                    options: (classes || []).map((c) => ({ label: `${c.name} (${c.code || 'N/A'})`, value: c.id })),
+                                    allowClear: true,
+                                    disabled: !filters.courseId
+                                }
                             ]}
                             initialValues={filters}
                             onChange={setFilters}
@@ -122,8 +135,8 @@ export default function InstructorStudents() {
                             dataSource={filteredRows}
                             rowKey={(r) => r.id}
                             loading={loadingStudents}
-                            pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true, showTotal: (t) => `Total ${t} students` }}
-                            scroll={{ x: 900 }}
+                            pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true, showTotal: (t) => `Tổng ${t} học viên` }}
+                            scroll={{ x: 1200 }}
                         />
                     </Card>
                 </div>

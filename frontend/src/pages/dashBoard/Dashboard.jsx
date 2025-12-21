@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { adminService } from "../../api/admin.service";
-import { authService } from "../../api/auth.service";
 
-function Dashboard({isAuthenticated}) {
+function Dashboard({ isAuthenticated }) {
   const [userscount, setUserscount] = useState(0);
   const [coursescount, setCoursescount] = useState(0);
   const [enrolled, setEnrolled] = useState(0);
 
   useEffect(() => {
 
-    if(!isAuthenticated){
+    if (!isAuthenticated) {
       return;
-    } 
-    
+    }
+
     async function fetchData() {
       const usersRes = await adminService.getAllUsers();
       if (usersRes.success) setUserscount(usersRes.data.length);
@@ -32,7 +31,7 @@ function Dashboard({isAuthenticated}) {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4 mb-10">
         <h1 className="text-4xl font-bold text-slate-800 tracking-tight">
-          Dashboard
+          Tổng quan
         </h1>
       </div>
 
@@ -45,7 +44,7 @@ function Dashboard({isAuthenticated}) {
           </div>
           <div>
             <h3 className="text-3xl font-bold text-slate-900">{userscount}</h3>
-            <p className="text-slate-600 text-lg">Total Users</p>
+            <p className="text-slate-600 text-lg">Tổng số người dùng</p>
           </div>
         </li>
 
@@ -56,7 +55,7 @@ function Dashboard({isAuthenticated}) {
           </div>
           <div>
             <h3 className="text-3xl font-bold text-slate-900">{coursescount}</h3>
-            <p className="text-slate-600 text-lg">Total Courses</p>
+            <p className="text-slate-600 text-lg">Tổng số khóa học</p>
           </div>
         </li>
 
@@ -67,7 +66,7 @@ function Dashboard({isAuthenticated}) {
           </div>
           <div>
             <h3 className="text-3xl font-bold text-slate-900">{enrolled}</h3>
-            <p className="text-slate-600 text-lg">Total Enrollment</p>
+            <p className="text-slate-600 text-lg">Tổng đăng ký</p>
           </div>
         </li>
       </ul>

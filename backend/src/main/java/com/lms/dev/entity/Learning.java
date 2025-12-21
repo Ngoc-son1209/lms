@@ -13,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "learning", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "course_id" }) })
 public class Learning {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -20,13 +21,18 @@ public class Learning {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JsonIgnore
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, columnDefinition = "BINARY(16)")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JsonIgnore
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false, columnDefinition = "BINARY(16)")
     private Course course;
+
+    @ManyToOne(optional = true)
+    @JsonIgnore
+    @JoinColumn(name = "class_section_id", nullable = true, columnDefinition = "BINARY(16)")
+    private ClassSection classSection;
 }

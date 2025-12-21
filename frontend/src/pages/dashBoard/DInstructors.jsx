@@ -248,7 +248,7 @@ function DInstructors() {
           <Button type="primary" ghost icon={<EyeOutlined />} size="small" onClick={() => handleView(record)}>
             Xem
           </Button>
-          <Button icon={<EditOutlined />} size="small" onClick={() => handleOpenEdit(record)}>
+          <Button type="primary" icon={<EditOutlined />} size="small" onClick={() => handleOpenEdit(record)}>
             Sửa
           </Button>
           {opts.approveReject && (
@@ -308,7 +308,7 @@ function DInstructors() {
         { label: "Nam", value: "Male" },
         { label: "Nữ", value: "Female" },
         { label: "Khác", value: "Other" },
-        { label: "Không nói", value: "Prefer not to say" },
+        { label: "Không muốn nói", value: "Prefer not to say" },
       ],
     },
     {
@@ -427,7 +427,7 @@ function DInstructors() {
         <Form form={editForm} layout="vertical">
           {/* Row 1: Full Name & Email (email read-only) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Full Name" name="fullName" rules={[{ required: true, message: "Please input full name" }]}>
+            <Form.Item label="Họ tên" name="fullName" rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}>
               <Input />
             </Form.Item>
             <Form.Item label="Email">
@@ -436,42 +436,43 @@ function DInstructors() {
           </div>
           {/* Row 2: Phone & Date of Birth */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Phone Number" name="mobileNumber">
+            <Form.Item label="Số điện thoại" name="mobileNumber">
               <Input />
             </Form.Item>
-            <Form.Item label="Date of Birth" name="dob">
+            <Form.Item label="Ngày sinh" name="dob">
               <Input placeholder="YYYY-MM-DD" />
             </Form.Item>
           </div>
           {/* Row 3: Gender */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label="Gender" name="gender">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item label="Giới tính" name="gender">
               <Select
                 options={[
-                  { label: "Male", value: "Male" },
-                  { label: "Female", value: "Female" },
-                  { label: "Other", value: "Other" },
-                  { label: "Prefer not to say", value: "Prefer not to say" },
+                  { label: "Nam", value: "Male" },
+                  { label: "Nữ", value: "Female" },
+                  { label: "Khác", value: "Other" },
+                  { label: "Không muốn nói", value: "Prefer not to say" },
                 ]}
                 allowClear
               />
             </Form.Item>
+            <Form.Item label="Nghề nghiệp" name="profession">
+              <Input />
+            </Form.Item>
           </div>
           {/* Row 4: Location & Profession */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Location" name="location">
+            <Form.Item label="Địa chỉ" name="location">
               <Input />
             </Form.Item>
-            <Form.Item label="Profession" name="profession">
+            <Form.Item label="Chuyên môn" name="expertise" rules={[{ required: true, message: "Vui lòng nhập chuyên môn" }]}>
               <Input />
             </Form.Item>
           </div>
           {/* Row 5: Expertise & Bio */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Expertise" name="expertise" rules={[{ required: true, message: "Please input expertise" }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item label="Bio" name="bio">
+
+            <Form.Item label="Giới thiệu" name="bio">
               <TextArea rows={3} />
             </Form.Item>
           </div>

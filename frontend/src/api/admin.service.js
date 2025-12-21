@@ -29,15 +29,6 @@ async function getAllCourses() {
   }
 }
 
-async function getMyCourses() {
-  try {
-    const { data } = await api.get("/api/courses/my");
-    return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching my courses:", error);
-    return { success: false, error: "Could not fetch my courses" };
-  }
-}
 
 async function getAllCoursesWithCount() {
   try {
@@ -49,15 +40,15 @@ async function getAllCoursesWithCount() {
   }
 }
 
-async function getMyCoursesWithCount() {
-  try {
-    const { data } = await api.get("/api/courses/my/with-count");
-    return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching my courses with count:", error);
-    return { success: false, error: "Could not fetch my courses with count" };
-  }
+// Fallbacks to keep instructor pages working: map "my" endpoints to common ones
+async function getMyCourses() {
+  return getAllCourses();
 }
+
+async function getMyCoursesWithCount() {
+  return getAllCoursesWithCount();
+}
+
 
 async function getCourseById(courseId) {
   try {
@@ -250,6 +241,33 @@ async function getStudentsByCourse(courseId) {
   }
 }
 
+async function getInstructorStudents(courseId, classSectionId) {
+  try {
+    const params = {};
+    if (courseId) params.courseId = courseId;
+    if (classSectionId) params.classSectionId = classSectionId;
+    
+    const { data } = await api.get(`/api/learning/instructor/students`, { params });
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching instructor students:", error);
+    return { success: false, error: "Could not fetch instructor students" };
+  }
+}
+
+async function getInstructorClasses(courseId) {
+  try {
+    const params = {};
+    if (courseId) params.courseId = courseId;
+    
+    const { data } = await api.get(`/api/learning/instructor/classes`, { params });
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching instructor classes:", error);
+    return { success: false, error: "Could not fetch instructor classes" };
+  }
+}
+
 async function getFeedbacks(courseId) {
   try {
     const { data } = await api.get(`/api/feedbacks/${courseId}`);
@@ -257,6 +275,46 @@ async function getFeedbacks(courseId) {
   } catch (error) {
     console.error("Error fetching feedbacks:", error);
     return { success: false, error: "Could not fetch feedbacks" };
+  }
+}
+
+async function getClassesByCourse(courseId) {
+  try {
+    const { data } = await api.get(`/api/classes/by-course/${courseId}`);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching classes:", error);
+    return { success: false, error: "Could not fetch classes" };
+  }
+}
+
+async function createClassSection(payload) {
+  try {
+    const { data } = await api.post(`/api/classes`, payload);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error creating class:", error);
+    return { success: false, error: error.response?.data?.message || "Could not create class" };
+  }
+}
+
+async function updateClassSection(id, payload) {
+  try {
+    const { data } = await api.put(`/api/classes/${id}`, payload);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error updating class:", error);
+    return { success: false, error: error.response?.data?.message || "Could not update class" };
+  }
+}
+
+async function deleteClassSection(id) {
+  try {
+    await api.delete(`/api/classes/${id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting class:", error);
+    return { success: false, error: error.response?.data?.message || "Could not delete class" };
   }
 }
 
@@ -284,5 +342,11 @@ export const adminService = {
   resignInstructor,
   getStudents,
   getStudentsByCourse,
+  getInstructorStudents,
+  getInstructorClasses,
   getFeedbacks,
+  getClassesByCourse,
+  createClassSection,
+  updateClassSection,
+  deleteClassSection,
 };

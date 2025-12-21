@@ -78,7 +78,7 @@ function Assessment() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading assessment...</p>
+          <p className="text-gray-600">Đang tải bài kiểm tra...</p>
         </div>
       </div>
     );
@@ -97,11 +97,11 @@ function Assessment() {
           </button>
 
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-2xl shadow-lg">
-            <h1 className="text-xl font-bold text-center">Assessment Questions</h1>
+            <h1 className="text-xl font-bold text-center">Câu hỏi kiểm tra</h1>
           </div>
 
           <div className="bg-white rounded-lg shadow-md px-4 py-2">
-            <p className="text-sm text-gray-600">Progress</p>
+            <p className="text-sm text-gray-600">Tiến trình</p>
             <p className="font-bold text-indigo-600">
               {Object.keys(selectedAnswers).length}/{totalQsns}
             </p>
@@ -124,11 +124,10 @@ function Assessment() {
                 {[question.option1, question.option2, question.option3, question.option4].map((option, optionIndex) => (
                   <label
                     key={`${question.id}-${optionIndex}`}
-                    className={`flex items-center p-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                      selectedAnswers[question.id] === option
-                        ? 'bg-indigo-100 border-2 border-indigo-500 text-indigo-800'
-                        : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
-                    }`}
+                    className={`flex items-center p-2 rounded-xl cursor-pointer transition-all duration-200 ${selectedAnswers[question.id] === option
+                      ? 'bg-indigo-100 border-2 border-indigo-500 text-indigo-800'
+                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                      }`}
                   >
                     <input
                       type="radio"
@@ -138,11 +137,10 @@ function Assessment() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mr-3 ${
-                        selectedAnswers[question.id] === option
-                          ? 'border-indigo-500 bg-indigo-500'
-                          : 'border-gray-300'
-                      }`}
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mr-3 ${selectedAnswers[question.id] === option
+                        ? 'border-indigo-500 bg-indigo-500'
+                        : 'border-gray-300'
+                        }`}
                     >
                       {selectedAnswers[question.id] === option && (
                         <FontAwesomeIcon icon={faCheck} className="text-white text-xs" />
@@ -166,11 +164,10 @@ function Assessment() {
           <button
             onClick={handleSubmit}
             disabled={submitting || Object.keys(selectedAnswers).length !== totalQsns}
-            className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg ${
-              submitting || Object.keys(selectedAnswers).length !== totalQsns
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
-            }`}
+            className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg ${submitting || Object.keys(selectedAnswers).length !== totalQsns
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+              }`}
           >
             {submitting ? (
               <>
@@ -204,7 +201,7 @@ function Assessment() {
           <div className={`text-6xl mb-4 ${resultData.color}`}>
             <FontAwesomeIcon icon={resultData.icon} />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Assessment Complete!</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Kiểm tra hoàn thành!</h2>
           <h3 className={`text-3xl font-bold mb-4 ${resultData.color}`}>{resultData.message}</h3>
 
           <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-6 mb-4">
@@ -212,8 +209,8 @@ function Assessment() {
               {totalQsns > 0 ? Math.round((correctCount / totalQsns) * 100) : 0}%
             </div>
             <p className="text-gray-600">
-              You answered <span className="font-bold text-indigo-600">{correctCount}</span> out of{' '}
-              <span className="font-bold text-indigo-600">{totalQsns}</span> questions correctly
+              Bạn đã trả lời <span className="font-bold text-indigo-600">{correctCount}</span> trên tổng số{' '}
+              <span className="font-bold text-indigo-600">{totalQsns}</span> câu hỏi đúng
             </p>
           </div>
 

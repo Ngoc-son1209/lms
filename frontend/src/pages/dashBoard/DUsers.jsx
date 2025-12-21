@@ -43,10 +43,10 @@ function Users() {
       if (res.success) {
         setUsers(res.data || []);
       } else {
-        message.error("Failed to fetch users");
+        message.error("Không thể tải danh sách học viên");
       }
     } catch (error) {
-      message.error("Error fetching users");
+      message.error("Lỗi khi tải danh sách học viên");
     } finally {
       setLoading(false);
     }
@@ -80,11 +80,11 @@ function Users() {
     try {
       const res = await adminService.updateUser(selectedUser.id, values);
       if (res.success) {
-        message.success("User updated successfully");
+        message.success("Cập nhật học viên thành công");
         setEditModalVisible(false);
         fetchUsers(); // Refresh the users list
       } else {
-        message.error("Failed to update user");
+        message.error("Cập nhật học viên thất bại");
       }
     } catch (error) {
       message.error("Error updating user");
@@ -97,21 +97,21 @@ function Users() {
   };
 
   const columns = [
+    // {
+    //   title: "Avatar",
+    //   dataIndex: "profileImage",
+    //   key: "avatar",
+    //   width: 80,
+    //   render: (profileImage, record) => (
+    //     <Avatar
+    //       size={40}
+    //       src={profileImage ? `data:image/jpeg;base64,${profileImage}` : null}
+    //       icon={<UserOutlined />}
+    //     />
+    //   ),
+    // },
     {
-      title: "Avatar",
-      dataIndex: "profileImage",
-      key: "avatar",
-      width: 80,
-      render: (profileImage, record) => (
-        <Avatar
-          size={40}
-          src={profileImage ? `data:image/jpeg;base64,${profileImage}` : null}
-          icon={<UserOutlined />}
-        />
-      ),
-    },
-    {
-      title: "Username",
+      title: "Họ tên",
       dataIndex: "username",
       key: "username",
       sorter: (a, b) => a.username.localeCompare(b.username),
@@ -123,13 +123,13 @@ function Users() {
       sorter: (a, b) => a.email.localeCompare(b.email),
     },
     {
-      title: "Phone",
+      title: "Số điện thoại",
       dataIndex: "mobileNumber",
       key: "mobileNumber",
       render: (phone) => phone || "N/A",
     },
     {
-      title: "Role",
+      title: "Vai trò",
       dataIndex: "role",
       key: "role",
       render: (role) => (
@@ -137,23 +137,23 @@ function Users() {
       ),
     },
     {
-      title: "Status",
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (isActive) => (
-        <Tag color={isActive ? "green" : "red"}>
-          {isActive ? "Active" : "Inactive"}
+      title: "Trạng thái",
+      dataIndex: "enabled",
+      key: "enabled",
+      render: (enabled) => (
+        <Tag color={enabled ? "green" : "red"}>
+          {enabled ? "Đã kích hoạt" : "Chưa kích hoạt"}
         </Tag>
       ),
     },
     {
-      title: "Profession",
+      title: "Nghề nghiệp",
       dataIndex: "profession",
       key: "profession",
       render: (profession) => profession || "N/A",
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       width: 120,
       render: (_, record) => (
@@ -165,7 +165,7 @@ function Users() {
             onClick={() => handleView(record)}
             size="small"
           >
-            View
+            Xem
           </Button>
           <Button
             type="primary"
@@ -173,7 +173,7 @@ function Users() {
             onClick={() => handleEdit(record)}
             size="small"
           >
-            Edit
+            Sửa
           </Button>
         </Space>
       ),
@@ -193,8 +193,8 @@ function Users() {
   return (
     <>
       <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Users Management</h1>
-        <p className="text-slate-600">Manage and view all registered users</p>
+        <h1 className="text-3xl font-bold text-gray-900">Quản lý học viên</h1>
+        <p className="text-slate-600">Xem và quản lý danh sách học viên</p>
       </div>
 
       <Card className="shadow-xl mb-4">
@@ -224,12 +224,12 @@ function Users() {
 
       {/* View User Modal */}
       <Modal
-        title="User Details"
+        title="Chi tiết học viên"
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setViewModalVisible(false)}>
-            Close
+            Đóng
           </Button>,
         ]}
         width={800}
@@ -250,10 +250,10 @@ function Users() {
                   />
                   <div className="mt-2">
                     <Tag
-                      color={selectedUser.isActive ? "green" : "red"}
+                      color={selectedUser.enabled ? "green" : "red"}
                       className="mb-2"
                     >
-                      {selectedUser.isActive ? "Active" : "Inactive"}
+                      {selectedUser.enabled ? "Hoạt động" : "Ngừng hoạt động"}
                     </Tag>
                     <br />
                     <Tag color={selectedUser.role === "ADMIN" ? "red" : "blue"}>
@@ -264,28 +264,28 @@ function Users() {
               </Col>
               <Col span={18}>
                 <Descriptions column={2} bordered size="small">
-                  <Descriptions.Item label="Username" span={1}>
+                  <Descriptions.Item label="Họ tên" span={1}>
                     {selectedUser.username}
                   </Descriptions.Item>
                   <Descriptions.Item label="Email" span={1}>
                     {selectedUser.email}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Phone" span={1}>
+                  <Descriptions.Item label="Số điện thoại" span={1}>
                     {selectedUser.mobileNumber || "N/A"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Date of Birth" span={1}>
+                  <Descriptions.Item label="Ngày sinh" span={1}>
                     {selectedUser.dob || "N/A"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Gender" span={1}>
+                  <Descriptions.Item label="Giới tính" span={1}>
                     {selectedUser.gender || "N/A"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Location" span={1}>
+                  <Descriptions.Item label="Địa chỉ" span={1}>
                     {selectedUser.location || "N/A"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Profession" span={2}>
+                  <Descriptions.Item label="Nghề nghiệp" span={2}>
                     {selectedUser.profession || "N/A"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="LinkedIn" span={1}>
+                  {/* <Descriptions.Item label="LinkedIn" span={1}>
                     {selectedUser.linkedin_url ? (
                       <a
                         href={selectedUser.linkedin_url}
@@ -310,11 +310,11 @@ function Users() {
                     ) : (
                       "N/A"
                     )}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Created At" span={1}>
+                  </Descriptions.Item> */}
+                  <Descriptions.Item label="Ngày đăng ký" span={1}>
                     {formatDate(selectedUser.createdAt)}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Updated At" span={1}>
+                  <Descriptions.Item label="Cập nhật lần cuối" span={1}>
                     {formatDate(selectedUser.updatedAt)}
                   </Descriptions.Item>
                 </Descriptions>
@@ -326,7 +326,7 @@ function Users() {
 
       {/* Edit User Modal */}
       <Modal
-        title="Edit User"
+        title="Sửa học viên"
         open={editModalVisible}
         onCancel={() => setEditModalVisible(false)}
         footer={null}
@@ -341,10 +341,10 @@ function Users() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Username"
+                label="Họ tên"
                 name="username"
                 rules={[
-                  { required: true, message: "Please input the username!" },
+                  { required: true, message: "Vui lòng nhập họ tên!" },
                 ]}
               >
                 <Input />
@@ -355,8 +355,8 @@ function Users() {
                 label="Email"
                 name="email"
                 rules={[
-                  { required: true, message: "Please input the email!" },
-                  { type: "email", message: "Please enter a valid email!" },
+                  { required: true, message: "Vui lòng nhập email!" },
+                  { type: "email", message: "Vui lòng nhập email hợp lệ!" },
                 ]}
               >
                 <Input />
@@ -366,12 +366,12 @@ function Users() {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Phone Number" name="mobileNumber">
+              <Form.Item label="Số điện thoại" name="mobileNumber">
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Date of Birth" name="dob">
+              <Form.Item label="Ngày sinh" name="dob">
                 <Input placeholder="YYYY-MM-DD" />
               </Form.Item>
             </Col>
@@ -379,7 +379,7 @@ function Users() {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Role" name="role">
+              <Form.Item label="Vai trò" name="role">
                 <Select>
                   <Option value="USER">USER</Option>
                   <Option value="ADMIN">ADMIN</Option>
@@ -396,11 +396,11 @@ function Users() {
               </Form.Item>
             </Col> */}
             <Col span={12}>
-              <Form.Item label="Gender" name="gender">
-                <Select placeholder="Select gender">
-                  <Option value="Male">Male</Option>
-                  <Option value="Female">Female</Option>
-                  <Option value="Other">Other</Option>
+              <Form.Item label="Giới tính" name="gender">
+                <Select placeholder="Chọn giới tính">
+                  <Option value="Male">Nam</Option>
+                  <Option value="Female">Nữ</Option>
+                  <Option value="Other">Khác</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -408,18 +408,18 @@ function Users() {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Location" name="location">
+              <Form.Item label="Địa chỉ" name="location">
                 <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Profession" name="profession">
+              <Form.Item label="Nghề nghiệp" name="profession">
                 <Input />
               </Form.Item>
             </Col>
           </Row>
 
-          <Row gutter={16}>
+          {/* <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 label="LinkedIn URL"
@@ -438,15 +438,15 @@ function Users() {
                 <Input placeholder="https://github.com/username" />
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
 
           <Form.Item className="text-right">
             <Space>
               <Button onClick={() => setEditModalVisible(false)}>
-                Cancel
+                Đóng
               </Button>
               <Button type="primary" htmlType="submit">
-                Update User
+                Cập nhật
               </Button>
             </Space>
           </Form.Item>

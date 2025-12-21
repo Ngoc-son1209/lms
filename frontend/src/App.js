@@ -20,6 +20,7 @@ import certificate from './pages/assessment/certificate';
 import Forum from './pages/course/forum';
 import CoursePreview from './pages/course/CoursePreview';
 import AdminCoursePreview from './pages/dashBoard/AdminCoursePreview';
+import AdminCourseClasses from './pages/dashBoard/AdminCourseClasses';
 import AdminDashboard from './pages/dashBoard/AdminDashboard';
 // Import các Component mới cho quản lý nội dung
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
@@ -30,6 +31,7 @@ import InstructorCourses from './pages/instructor/InstructorCourses';
 import InstructorQuestions from './pages/instructor/InstructorQuestions';
 import InstructorStudents from './pages/instructor/InstructorStudents';
 import InstructorFeedback from './pages/instructor/InstructorFeedback';
+import InstructorClasses from './pages/instructor/InstructorClasses';
 
 // Import các component bảo vệ Route
 import { AdminRoute, UserRoute, InstructorRoute } from "./Components/common/ProtectedRoute";
@@ -109,6 +111,14 @@ function App() {
               </InstructorRoute>
             }
           />
+          <Route
+            path="/instructor/classes"
+            element={
+              <InstructorRoute>
+                <InstructorClasses />
+              </InstructorRoute>
+            }
+          />
 
           {/* ======================= ADMIN Routes (Mới & Cũ) ======================= */}
           {/* Cần đảm bảo AdminDashboard chỉ render 1 lần duy nhất */}
@@ -132,6 +142,7 @@ function App() {
 
           {/* Preview course for Admin/Instructor */}
           <Route path="/admin/course/:id/preview" element={<AdminRoute><AdminCoursePreview /></AdminRoute>} />
+          <Route path="/admin/course/:id/classes" element={<AdminRoute><AdminCourseClasses /></AdminRoute>} />
           <Route path="/instructor/course/:id/preview" element={<InstructorRoute><CoursePreview /></InstructorRoute>} />
 
           {/* ======================= Error Route ======================= */}

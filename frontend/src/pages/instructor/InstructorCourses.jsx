@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../../Components/common/Navbar";
-import Courses from "../dashBoard/DCourses";
+import InstructorCoursesView from "./InstructorCoursesView";
 
 export default function InstructorCourses() {
     return (
@@ -8,7 +8,7 @@ export default function InstructorCourses() {
             <Navbar page="instructor-courses" />
             <main className="p-6">
                 <div className="max-w-7xl mx-auto">
-                    <Courses />
+                    <InstructorCoursesView />
                 </div>
             </main>
         </div>

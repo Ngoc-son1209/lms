@@ -1,7 +1,7 @@
-import { Modal, Form, Input, InputNumber, message, Select, Spin } from "antd";
+import { Modal, Form, Input, InputNumber, message, DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import { adminService } from "../../api/admin.service";
-import { authService } from "../../api/auth.service";
 
 const { TextArea } = Input;
 
@@ -9,36 +9,17 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
-  const [instructors, setInstructors] = useState([]);
-  const [loadingInstructors, setLoadingInstructors] = useState(false);
-
   const isEditMode = mode === "edit" || courseId !== null;
-  const currentUser = authService.getCurrentUser();
-  const isInstructorRole = currentUser?.role === "ROLE_INSTRUCTOR";
-  const isAdminRole = currentUser?.role === "ROLE_ADMIN";
-  const modalTitle = isEditMode ? "Edit Course" : "Add New Course";
-  const submitButtonText = isEditMode ? "Update Course" : "Add Course";
-  const loadingText = isEditMode ? "Updating..." : "Adding...";
+  const modalTitle = isEditMode ? "Sửa khóa học" : "Thêm khóa học";
+  const submitButtonText = isEditMode ? "Cập nhật khóa học" : "Thêm khóa học";
+  const loadingText = isEditMode ? "Đang cập nhật..." : "Đang thêm...";
 
   useEffect(() => {
     const init = async () => {
-      if (isOpen && isAdminRole) {
-        setLoadingInstructors(true);
-        try {
-          const res = await adminService.getApprovedInstructors();
-          if (res.success) setInstructors(res.data || []);
-        } finally {
-          setLoadingInstructors(false);
-        }
-      }
       if (isOpen && isEditMode && courseId) {
         fetchCourseData();
       } else if (isOpen && !isEditMode) {
         form.resetFields();
-        // If instructor, prefill instructor name (fallback to email)
-        if (isInstructorRole && (currentUser?.name || currentUser?.email)) {
-          form.setFieldsValue({ instructor: currentUser.name || currentUser.email });
-        }
       }
     };
     init();
@@ -51,12 +32,12 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
       if (result.success) {
         const formData = {
           course_name: result.data.course_name,
-          instructor: result.data.instructor,
-          instructorId: result.data.instructorId,
           price: result.data.price,
           description: result.data.description,
           y_link: result.data.y_link,
           p_link: result.data.p_link,
+          startAt: result.data.startAt ? dayjs(result.data.startAt) : null,
+          endAt: result.data.endAt ? dayjs(result.data.endAt) : null,
         };
         form.setFieldsValue(formData);
       } else {
@@ -74,46 +55,21 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      let result;
-      if (isEditMode) {
-        const editData = {
-          course_name: values.course_name,
-          instructor: values.instructor,
-          instructorId: values.instructorId,
-          price: values.price,
-          description: values.description,
-          y_link: values.y_link,
-          p_link: values.p_link,
-        };
-        // For admin, ensure display instructor name is set from selection
-        if (isAdminRole && values.instructorId) {
-          const picked = (instructors || []).find((i) => i.userId === values.instructorId);
-          if (picked) editData.instructor = picked.fullName || picked.email;
-        }
-        result = await adminService.updateCourse(courseId, editData);
-      } else {
-        const addData = {
-          course_name: values.course_name,
-          instructor: values.instructor,
-          instructorId: values.instructorId,
-          price: values.price,
-          description: values.description,
-          y_link: values.y_link,
-          p_link: values.p_link,
-        };
-        // Set display name based on role
-        if (isInstructorRole && (currentUser?.name || currentUser?.email)) {
-          addData.instructor = currentUser.name || currentUser.email;
-        }
-        if (isAdminRole && values.instructorId) {
-          const picked = (instructors || []).find((i) => i.userId === values.instructorId);
-          if (picked) addData.instructor = picked.fullName || picked.email;
-        }
-        result = await adminService.createCourse(addData);
-      }
+      const payload = {
+        course_name: values.course_name,
+        price: values.price,
+        description: values.description,
+        y_link: values.y_link,
+        p_link: values.p_link,
+        startAt: values.startAt ? values.startAt.format('YYYY-MM-DD') : null,
+        endAt: values.endAt ? values.endAt.format('YYYY-MM-DD') : null,
+      };
+      const result = isEditMode
+        ? await adminService.updateCourse(courseId, payload)
+        : await adminService.createCourse(payload);
 
       if (result.success) {
-        message.success(isEditMode ? "Course updated successfully!" : "Course added successfully!");
+        message.success(isEditMode ? "Cập nhật khóa học thành công!" : "Thêm khóa học thành công!");
         form.resetFields();
         onClose();
         onSuccess?.();
@@ -155,64 +111,36 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
           className="mt-2 space-y-4"
           initialValues={{
             course_name: "",
-            instructor: "",
-            instructorId: undefined,
             price: 0,
             description: "",
             y_link: "",
             p_link: "",
+            startAt: null,
+            endAt: null,
           }}
         >
           <Form.Item
-            label="Course Name"
+            label="Tên khóa học"
             name="course_name"
             rules={[
-              { required: true, message: "Course name is required" },
-              { min: 3, message: "Course name must be at least 3 characters" },
-              { max: 100, message: "Course name cannot exceed 100 characters" },
+              { required: true, message: "Tên khóa học là bắt buộc" },
+              { min: 3, message: "Tên khóa học phải có ít nhất 3 ký tự" },
+              { max: 100, message: "Tên khóa học không được vượt quá 100 ký tự" },
             ]}
           >
-            <Input placeholder="Enter course name" />
+            <Input placeholder="Nhập tên khóa học" />
           </Form.Item>
 
-          {/* Admin can assign an instructor */}
-          {isAdminRole && (
-            <Form.Item
-              label="Instructor"
-              name="instructorId"
-              rules={[{ required: true, message: "Please select an instructor" }]}
-            >
-              <Select
-                placeholder="Select instructor"
-                loading={loadingInstructors}
-                options={(instructors || []).map((ins) => ({
-                  value: ins.userId,
-                  label: `${ins.fullName || ins.email} - ${ins.email}`,
-                }))}
-                showSearch
-                optionFilterProp="label"
-                onChange={(val) => {
-                  const picked = (instructors || []).find((i) => i.userId === val);
-                  if (picked) {
-                    form.setFieldsValue({ instructor: picked.fullName || picked.email });
-                  }
-                }}
-              />
-            </Form.Item>
-          )}
-
-
-
           <Form.Item
-            label="Price"
+            label="Giá khóa học"
             name="price"
             rules={[
-              { required: true, message: "Price is required" },
-              { type: "number", min: 0, message: "Price must be a positive number" },
+              { required: true, message: "Giá khóa học là bắt buộc" },
+              { type: "number", min: 0, message: "Giá khóa học phải là một số" },
             ]}
           >
             <InputNumber
-              placeholder="Enter price"
+              placeholder="Nhập giá khóa học"
               className="w-full"
               min={0}
               step={0.01}
@@ -224,23 +152,23 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
           </Form.Item>
 
           <Form.Item
-            label="Description"
+            label="Mô tả"
             name="description"
             rules={[
-              { required: true, message: "Description is required" },
-              { min: 10, message: "Description must be at least 10 characters" },
-              { max: 500, message: "Description cannot exceed 500 characters" },
+              { required: true, message: "Mô tả là bắt buộc" },
+              { min: 10, message: "Mô tả phải có ít nhất 10 ký tự" },
+              { max: 500, message: "Mô tả không được vượt quá 500 ký tự" },
             ]}
           >
-            <TextArea rows={4} placeholder="Enter course description" showCount maxLength={500} />
+            <TextArea rows={4} placeholder="Nhập mô tả khóa học" showCount maxLength={500} />
           </Form.Item>
 
           <Form.Item
             label="Video Link"
             name="y_link"
             rules={[
-              { required: true, message: "Video link is required" },
-              { type: "url", message: "Please enter a valid URL" },
+              { required: true, message: "Video link là bắt buộc" },
+              { type: "url", message: "Vui lòng nhập một URL hợp lệ" },
             ]}
           >
             <Input placeholder="https://example.com/video" />
@@ -250,11 +178,19 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
             label="Image Link"
             name="p_link"
             rules={[
-              { required: true, message: "Image link is required" },
-              { type: "url", message: "Please enter a valid URL" },
+              { required: true, message: "Image link là bắt buộc" },
+              { type: "url", message: "Vui lòng nhập một URL hợp lệ" },
             ]}
           >
             <Input placeholder="https://example.com/image.jpg" />
+          </Form.Item>
+
+          <Form.Item label="Ngày bắt đầu" name="startAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const end = getFieldValue('endAt'); if (!value || !end) return Promise.resolve(); return end.isAfter(value, 'day') ? Promise.resolve() : Promise.reject(new Error('End date must be after start date')); } })]}>
+            <DatePicker className="w-full" placeholder="Chọn ngày bắt đầu" />
+          </Form.Item>
+
+          <Form.Item label="Ngày kết thúc" name="endAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const start = getFieldValue('startAt'); if (!value || !start) return Promise.resolve(); return value.isAfter(start, 'day') ? Promise.resolve() : Promise.reject(new Error('End date must be after start date')); } })]}>
+            <DatePicker className="w-full" placeholder="Chọn ngày kết thúc" />
           </Form.Item>
 
           <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">

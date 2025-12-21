@@ -8,6 +8,7 @@ import CourseModal from "./CourseModal";
 import DeleteModal from "./DeleteModal";
 import AddQuestion from "./AddQuestions";
 import SearchFilter from "../../Components/common/SearchFilter";
+import AdminCourseClassesPanel from "./AdminCourseClassesPanel";
 
 function Courses() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function Courses() {
   });
 
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [viewMode, setViewMode] = useState(null); // 'questions' | 'classes'
 
   useEffect(() => {
     fetchCourses();
@@ -35,10 +37,7 @@ function Courses() {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const role = localStorage.getItem("role");
-      const result = role === "ROLE_INSTRUCTOR"
-        ? await adminService.getMyCoursesWithCount()
-        : await adminService.getAllCoursesWithCount();
+      const result = await adminService.getAllCoursesWithCount();
       if (result.success) {
         setCourses(result.data);
       } else {
@@ -85,35 +84,43 @@ function Courses() {
 
   const addQuestions = (course_id) => {
     setSelectedCourseId(course_id);
+    setViewMode('questions');
+  };
+
+  const manageClasses = (course_id) => {
+    setSelectedCourseId(course_id);
+    setViewMode('classes');
   };
 
   // Apply keyword filter
   const filteredCourses = courses.filter((c) => {
     const kw = (filters.keyword || "").toLowerCase().trim();
     if (!kw) return true;
-    return [c.course_name, c.instructor]
+    return [c.course_name, c.description]
       .filter(Boolean)
       .some((x) => String(x).toLowerCase().includes(kw));
   });
 
   return (
     <div className="max-w-7xl mx-auto">
-      {selectedCourseId ? (
-        <AddQuestion courseId={selectedCourseId} onBack={() => setSelectedCourseId(null)} />
+      {selectedCourseId && viewMode === 'questions' ? (
+        <AddQuestion courseId={selectedCourseId} onBack={() => { setSelectedCourseId(null); setViewMode(null); }} />
+      ) : selectedCourseId && viewMode === 'classes' ? (
+        <AdminCourseClassesPanel courseId={selectedCourseId} onBack={() => { setSelectedCourseId(null); setViewMode(null); }} />
       ) : (
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">Course Management</h1>
-                <p className="text-gray-600">Manage your courses and track student progress</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">Quản lý khóa học</h1>
+                <p className="text-gray-600">Quản lý khóa học và theo dõi học viên</p>
               </div>
               <button
                 onClick={openAddCourseModal}
                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl px-6 py-3 font-semibold flex items-center gap-3 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <FontAwesomeIcon icon={faPlus} className="text-sm" />
-                Add New Course
+                Thêm khóa học
               </button>
             </div>
           </div>
@@ -121,7 +128,7 @@ function Courses() {
           <div className="p-8">
             <Card className="shadow-xl mb-4">
               <SearchFilter
-                fields={[{ type: "input", name: "keyword", label: "Search", placeholder: "Course/Instructor" }]}
+                fields={[{ type: "input", name: "keyword", label: "Search", placeholder: "Tên khóa học" }]}
                 initialValues={filters}
                 onChange={setFilters}
                 debounce={250}
@@ -183,7 +190,9 @@ function Courses() {
                       {/* Actions */}
                       <div className="flex items-center gap-2 ml-6">
                         <button onClick={() => addQuestions(course.course_id)} className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg" >
-                          <FontAwesomeIcon icon={faClipboardList} className="text-sm" /> Manage Tests </button>
+                          <FontAwesomeIcon icon={faClipboardList} className="text-sm" /> Quản lý câu hỏi </button>
+                        <button onClick={() => manageClasses(course.course_id)} className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg" >
+                          Quản lý lớp </button>
                         <button onClick={() => openEditCourseModal(course)} className="p-2.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200" >
                           <FontAwesomeIcon icon={faEdit} className="w-4 h-4" /> </button>
                         <button onClick={() => openDeleteModal(course)} className="p-2.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200" >
@@ -196,7 +205,7 @@ function Courses() {
                         const role = localStorage.getItem("role");
                         const path = role === "ROLE_INSTRUCTOR" ? `/instructor/course/${course.course_id}/preview` : `/admin/course/${course.course_id}/preview`;
                         navigate(path);
-                      }} className="text-blue-600 hover:text-blue-800 text-sm font-medium"> View Details → </button>
+                      }} className="text-blue-600 hover:text-blue-800 text-sm font-medium"> Chi tiết → </button>
                     </div>
                   </div>
                 ))}
@@ -221,8 +230,8 @@ function Courses() {
         onDelete={handleDeleteCourse}
         item={deleteModal.course}
         itemType="Course"
-        title="Delete Course"
-        description="Are you sure you want to delete this course?"
+        title="Xóa khóa học"
+        description="Bạn chắc chắn muốn xóa khóa học này?"
         itemDisplayName={deleteModal.course?.course_name}
       />
     </div>

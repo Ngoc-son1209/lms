@@ -88,7 +88,7 @@ export default function AdminCoursePreview() {
                     {loading ? (
                         <div className="text-center py-10">Loading...</div>
                     ) : error || !course ? (
-                        <div className="text-center text-red-500 py-10">Can not load course.</div>
+                        <div className="text-center text-red-500 py-10">Không thể tải khóa học.</div>
                     ) : (
                         <>
                             <div className="bg-white rounded-xl shadow p-4 mb-6">
@@ -108,9 +108,9 @@ export default function AdminCoursePreview() {
                             <div className="mt-8 bg-white shadow-2xl rounded-xl p-6">
                                 <div className="flex items-center gap-2 mb-3">
                                     <BookOpen className="w-5 h-5 text-primary" />
-                                    <h4 className="text-lg font-semibold text-neutral">Description</h4>
+                                    <h4 className="text-lg font-semibold text-neutral">Mô tả</h4>
                                 </div>
-                                <p className="text-gray-700 whitespace-pre-wrap">{course.description}</p>
+                                <p className="text left text-gray-700 whitespace-pre-wrap">{course.description}</p>
                             </div>
 
                             {/* Discussion button (same layout as user) */}
@@ -120,7 +120,7 @@ export default function AdminCoursePreview() {
                                     onClick={() => setIsDiscussionOpen(true)}
                                 >
                                     <MessageSquare className="w-4 h-4" />
-                                    Discussion
+                                    Diễn đàn
                                 </button>
                             </div>
 
@@ -131,7 +131,7 @@ export default function AdminCoursePreview() {
 
                             {/* Forum modal */}
                             <Modal
-                                title={<div className="font-semibold">Discussion Forum</div>}
+                                title={<div className="font-semibold">Diễn đàn</div>}
                                 open={isDiscussionOpen}
                                 onCancel={() => setIsDiscussionOpen(false)}
                                 footer={null}
