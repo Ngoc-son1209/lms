@@ -97,11 +97,11 @@ function Assessment() {
           </button>
 
           <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-2xl shadow-lg">
-            <h1 className="text-xl font-bold text-center">Câu hỏi kiểm tra</h1>
+            <h1 className="text-xl font-bold text-center">Assessment Questions</h1>
           </div>
 
           <div className="bg-white rounded-lg shadow-md px-4 py-2">
-            <p className="text-sm text-gray-600">Tiến trình</p>
+            <p className="text-sm text-gray-600">Progress</p>
             <p className="font-bold text-indigo-600">
               {Object.keys(selectedAnswers).length}/{totalQsns}
             </p>

@@ -99,15 +99,15 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="username"
-            label="Tên đăng nhập"
+            label="Họ tên"
             rules={[
-              { required: true, message: 'Vui lòng nhập tên đăng nhập!' },
-              { min: 3, message: 'Tên đăng nhập phải có ít nhất 3 ký tự!' },
+              { required: true, message: 'Vui lòng nhập họ tên!' },
+              { min: 3, message: 'Họ tên phải có ít nhất 3 ký tự!' },
             ]}
           >
             <Input
               prefix={<FontAwesomeIcon icon={faUser} style={{ color: '#9ca3af' }} />}
-              placeholder="Nhập tên đăng nhập"
+              placeholder="Nhập họ tên"
               size="large"
             />
           </Form.Item>
@@ -226,7 +226,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        {/* <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <Form.Item
             name="linkedin_url"
             label="LinkedIn URL"
@@ -254,7 +254,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
               size="large"
             />
           </Form.Item>
-        </div>
+        </div> */}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
           <Button
@@ -262,7 +262,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
             size="large"
             style={{ minWidth: '100px' }}
           >
-            Cancel
+            Đóng
           </Button>
           <Button
             type="primary"
@@ -275,7 +275,7 @@ const EditProfileModal = ({ visible, onCancel, userDetails, onUpdate, isInstruct
               minWidth: '140px'
             }}
           >
-            Update Profile
+            Cập nhật hồ sơ
           </Button>
         </div>
       </Form>
