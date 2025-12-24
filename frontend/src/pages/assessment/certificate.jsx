@@ -29,12 +29,12 @@ const Certificate = () => {
   const [pdfDownloading, setPdfDownloading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const navigate = useNavigate();
   const { courseId } = useParams();
   const authToken = localStorage.getItem("token");
   const userId = localStorage.getItem("id");
-  
+
   const [course, setCourse] = useState({
     course_name: "",
     instructor: "",
@@ -69,7 +69,7 @@ const Certificate = () => {
         }
 
         if (courseRes.success) {
-          setCourse(courseRes.data);          
+          setCourse(courseRes.data);
         } else {
           throw new Error("Failed to fetch course details");
         }
@@ -89,10 +89,10 @@ const Certificate = () => {
 
   const handleDownloadPDF = async () => {
     setPdfDownloading(true);
-    
+
     try {
       const certificateElement = document.getElementById("certificate");
-      
+
       if (!certificateElement) {
         throw new Error("Certificate element not found");
       }
@@ -106,12 +106,37 @@ const Certificate = () => {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        // THÊM ĐOẠN NÀY VÀO:
+        onclone: (clonedDoc) => {
+          // 1. Tìm tất cả các phần tử có sử dụng hiệu ứng gradient text
+          const elements = clonedDoc.querySelectorAll('.bg-clip-text');
+
+          // 2. Duyệt qua và gỡ bỏ hiệu ứng transparent/clip, thay bằng màu cứng
+          elements.forEach(el => {
+            el.classList.remove('text-transparent');
+            el.classList.remove('bg-clip-text');
+            el.classList.remove('bg-gradient-to-r'); // Gỡ gradient nền
+
+            // Set màu chữ hiển thị trong PDF (Chọn màu chủ đạo của bạn, ví dụ tím hoặc đen)
+            el.style.color = '#4f46e5'; // Màu Indigo đậm
+            el.style.backgroundImage = 'none';
+            el.style.webkitTextFillColor = '#4f46e5';
+          });
+
+          // (Tùy chọn) Xử lý riêng cho từng thẻ nếu muốn màu khác nhau
+          // Ví dụ: Tên người dùng muốn màu tím, tên khóa học muốn màu xanh
+          const userName = clonedDoc.querySelector('h2');
+          if (userName) userName.style.color = '#7c3aed'; // Purple
+
+          const courseName = clonedDoc.querySelector('h3');
+          if (courseName) courseName.style.color = '#059669'; // Emerald
+        }
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("landscape", "mm", "a4");
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgAspectRatio = canvas.width / canvas.height;
@@ -132,7 +157,6 @@ const Certificate = () => {
       pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
       pdf.save(`${userDetails?.username || 'Certificate'}_${course?.course_name || 'Course'}_Certificate.pdf`);
 
-      // Show buttons again
       if (buttonsContainer) {
         buttonsContainer.style.display = "flex";
       }
@@ -147,7 +171,7 @@ const Certificate = () => {
   const handleShare = (platform) => {
     const shareText = `🎉 I just completed ${course?.course_name} and earned my certificate! #Achievement #Learning`;
     const shareUrl = window.location.href;
-    
+
     const urls = {
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
@@ -206,7 +230,7 @@ const Certificate = () => {
             <FontAwesomeIcon icon={faArrowLeft} />
             Back
           </button>
-          
+
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
             <FontAwesomeIcon icon={faGraduationCap} className="text-3xl text-white" />
           </div>
@@ -229,7 +253,7 @@ const Certificate = () => {
             {/* Decorative Border */}
             <div className="absolute inset-4 border-4 border-yellow-300 rounded-2xl opacity-30"></div>
             <div className="absolute inset-8 border-2 border-yellow-200 rounded-xl opacity-20"></div>
-            
+
             <div className="relative p-16 text-center">
               {/* Logo */}
               <div className="mb-8">
@@ -257,19 +281,19 @@ const Certificate = () => {
                 <p className="text-xl text-gray-700 leading-relaxed">
                   This is to proudly certify that
                 </p>
-                
+
                 <h2 className="text-4xl font-bold text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text py-2">
                   {userDetails?.username || "Student"}
                 </h2>
-                
+
                 <p className="text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto">
                   has successfully completed the comprehensive course
                 </p>
-                
+
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mx-auto max-w-2xl border border-green-200">
                   <h3 className="text-3xl font-bold text-transparent bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text">
-                    {course?.course_name?.length > 50 
-                      ? course?.course_name 
+                    {course?.course_name?.length > 50
+                      ? course?.course_name
                       : `${course?.course_name} - Complete Course`}
                   </h3>
                 </div>
@@ -288,7 +312,7 @@ const Certificate = () => {
                     <p className="text-lg font-bold text-gray-800">{currentDate}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <FontAwesomeIcon icon={faIdCard} className="text-purple-600 text-xl" />
                   <div>
@@ -351,7 +375,7 @@ const Certificate = () => {
                 <FontAwesomeIcon icon={faLinkedin} className="text-xl" />
                 LinkedIn
               </button>
-              
+
               <button
                 onClick={() => handleShare('twitter')}
                 className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-6 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
@@ -359,7 +383,7 @@ const Certificate = () => {
                 <FontAwesomeIcon icon={faTwitter} className="text-xl" />
                 Twitter
               </button>
-              
+
               <button
                 onClick={() => handleShare('facebook')}
                 className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-6 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
@@ -379,13 +403,13 @@ const Certificate = () => {
                 <h4 className="font-semibold text-gray-800 mb-2">Course Completed</h4>
                 <p className="text-gray-600 text-sm">You have successfully finished all course requirements</p>
               </div>
-              
+
               <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
                 <FontAwesomeIcon icon={faCertificate} className="text-3xl text-green-600 mb-3" />
                 <h4 className="font-semibold text-gray-800 mb-2">Verified Certificate</h4>
                 <p className="text-gray-600 text-sm">This certificate is digitally verified and authentic</p>
               </div>
-              
+
               <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
                 <FontAwesomeIcon icon={faShare} className="text-3xl text-purple-600 mb-3" />
                 <h4 className="font-semibold text-gray-800 mb-2">Share Your Success</h4>
