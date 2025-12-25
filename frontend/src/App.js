@@ -32,6 +32,7 @@ import InstructorQuestions from './pages/instructor/InstructorQuestions';
 import InstructorStudents from './pages/instructor/InstructorStudents';
 import InstructorFeedback from './pages/instructor/InstructorFeedback';
 import InstructorClasses from './pages/instructor/InstructorClasses';
+import PaymentReturn from './pages/payment/PaymentReturn';
 
 // Import các component bảo vệ Route
 import { AdminRoute, UserRoute, InstructorRoute } from "./Components/common/ProtectedRoute";
@@ -52,6 +53,7 @@ function App() {
           <Route path='/courses' Component={Courses}></Route>
           <Route path='/course/:id' Component={Course}></Route>
           <Route path='/discussion/:id' Component={Forum}></Route>
+          <Route path='/payment-return' Component={PaymentReturn}></Route>
 
           <Route path='/profile' Component={Profile}></Route>
           <Route path='/Learnings' Component={Learnings}></Route>

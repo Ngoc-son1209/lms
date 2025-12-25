@@ -18,9 +18,18 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final LearningRepository learningRepository;
+    private final CourseAvailabilityService courseAvailabilityService;
 
     public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+        // # NOTE: Tự động refresh trạng thái còn chỗ/full mỗi lần query list (đơn giản, đảm bảo luôn đúng)
+        List<Course> courses = courseRepository.findAll();
+        for (Course c : courses) {
+            try {
+                courseAvailabilityService.refreshAndSave(c);
+            } catch (Exception ignored) {
+            }
+        }
+        return courses;
     }
 
     private CourseWithCountDTO toWithCount(Course c) {
@@ -39,15 +48,30 @@ public class CourseService {
                 .startAt(c.getStartAt())
                 .endAt(c.getEndAt())
                 .studentCount(cnt)
+                .availabilityStatus(c.getAvailabilityStatus())
                 .build();
     }
 
     public List<CourseWithCountDTO> getAllWithCount() {
-        return courseRepository.findAll().stream().map(this::toWithCount).collect(Collectors.toList());
+        List<Course> courses = courseRepository.findAll();
+        for (Course c : courses) {
+            try {
+                courseAvailabilityService.refreshAndSave(c);
+            } catch (Exception ignored) {
+            }
+        }
+        return courses.stream().map(this::toWithCount).collect(Collectors.toList());
     }
 
     public Course getCourseById(UUID id) {
-        return courseRepository.findById(id).orElse(null);
+        Course c = courseRepository.findById(id).orElse(null);
+        if (c != null) {
+            try {
+                courseAvailabilityService.refreshAndSave(c);
+            } catch (Exception ignored) {
+            }
+        }
+        return c;
     }
 
     public Course createCourse(Course course) {

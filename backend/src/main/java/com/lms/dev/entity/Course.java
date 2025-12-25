@@ -30,6 +30,13 @@ public class Course {
 
     private int price;
 
+    // # NOTE: Trạng thái còn chỗ hay đã full (tự động cập nhật dựa trên capacity
+    // các lớp)
+    // AVAILABLE: còn lớp còn chỗ
+    // FULL: tất cả lớp đã full (hoặc không có lớp active nào)
+    @Column(length = 20, nullable = false)
+    private String availabilityStatus = "AVAILABLE";
+
     private String description;
 
     private String p_link;

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { courseService } from "../../api/course.service";
 import { learningService } from "../../api/learning.service";
+import { paymentService } from "../../api/payment.service";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -65,17 +66,36 @@ function Courses() {
 
   const displayedCourses = filteredAndSortedCourses.slice(0, displayCount);
 
-  const enrollCourse = async (courseId) => {
+  const buyCourse = async (course) => {
     if (!authToken) {
       message.error("You need to login to continue");
       setTimeout(() => navigate("/login"), 2000);
       return;
     }
 
-    const res = await learningService.enrollCourse(userId, courseId);
-    if (res.success && res.data === "Enrolled successfully") {
-      message.success("Course Enrolled successfully");
-      setTimeout(() => navigate(`/course/${courseId}`), 2000);
+    if (enrolled.includes(course.course_id)) {
+      message.info("Bạn đã đăng ký khóa học này rồi");
+      return;
+    }
+
+    // # NOTE: chặn thanh toán từ đầu nếu BE báo FULL
+    if (course.availabilityStatus && course.availabilityStatus === "FULL") {
+      message.error("Khóa học hiện đã hết chỗ");
+      return;
+    }
+
+    try {
+      const res = await paymentService.createCoursePayment(course.course_id);
+      // ApiResponse<CreatePaymentResponse>
+      const paymentUrl = res?.data?.paymentUrl;
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        message.error(res?.message || "Không tạo được link thanh toán");
+      }
+    } catch (err) {
+      console.error("Error creating payment:", err);
+      message.error(err?.response?.data?.message || "Lỗi khi tạo thanh toán");
     }
   };
 
@@ -191,10 +211,10 @@ function Courses() {
                       </button>
                     ) : (
                       <button
-                        onClick={() => enrollCourse(course.course_id)}
+                        onClick={() => buyCourse(course)}
                         className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                       >
-                        Enroll Now
+                        Mua khóa học
                       </button>
                     )}
                   </div>

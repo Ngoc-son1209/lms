@@ -22,4 +22,5 @@ public class CourseWithCountDTO {
     private LocalDate startAt;
     private LocalDate endAt;
     private long studentCount;
+    private String availabilityStatus;
 }

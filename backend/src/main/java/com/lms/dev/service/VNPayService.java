@@ -38,7 +38,17 @@ public class VNPayService {
         params.put("vnp_Locale", "vn");
         params.put("vnp_ReturnUrl", returnUrl);
         params.put("vnp_IpAddr", "127.0.0.1");
-        params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+
+        // # NOTE: VNPay SIT thường yêu cầu OrderType và ExpireDate
+        params.put("vnp_OrderType", "other");
+
+        Date now = new Date();
+        params.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(now));
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(now);
+        cal.add(Calendar.MINUTE, 15);
+        params.put("vnp_ExpireDate", new SimpleDateFormat("yyyyMMddHHmmss").format(cal.getTime()));
 
         List<String> fieldNames = new ArrayList<>(params.keySet());
         Collections.sort(fieldNames);

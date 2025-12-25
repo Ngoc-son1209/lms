@@ -19,7 +19,10 @@ public class Payment {
     @Column(updatable = false, nullable = false)
     private UUID id; 
 
-    private UUID userId; 
+    private UUID userId;
+
+    // # NOTE: Khóa học được thanh toán
+    private UUID courseId;
 
     private Double amount;
 

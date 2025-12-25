@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, message, Tag, Typography } from "antd";
 import { adminService } from "../../api/admin.service";
+import AdminClassStudentsPanel from "./AdminClassStudentsPanel";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlus, faList } from '@fortawesome/free-solid-svg-icons';
 import { RestOutlined, EditOutlined } from "@ant-design/icons";
@@ -11,6 +12,7 @@ export default function AdminCourseClassesPanel({ courseId, onBack }) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
   const [instructors, setInstructors] = useState([]);
@@ -125,12 +127,26 @@ export default function AdminCourseClassesPanel({ courseId, onBack }) {
       width: 180,
       render: (_, r) => (
         <div className="flex gap-2">
+          <Button size="small" onClick={() => setSelectedClass(r)}>Học viên</Button>
           <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} >Sửa</Button>
           <Button size="small" danger icon={<RestOutlined />} onClick={() => handleDelete(r)} className="hover:bg-red-50">Xóa</Button>
         </div>
       )
     }
   ];
+
+  if (selectedClass) {
+    return (
+      <AdminClassStudentsPanel
+        courseId={courseId}
+        classSection={selectedClass}
+        onBack={() => {
+          setSelectedClass(null);
+          fetchClasses();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto">

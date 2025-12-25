@@ -53,6 +53,8 @@ public class WebSecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/auth/**", "/api/instructors/register", "/verify", "/chat", "/error")
                         .permitAll()
+                        // VNPay callbacks (server-to-server + return)
+                        .requestMatchers("/api/vnpay/ipn", "/api/vnpay/return").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/reset-password").permitAll()
 
@@ -69,12 +71,13 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/classes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/classes/**").hasRole("ADMIN")
 
-                        // Assessments, Enrollments, Feedback, Learning, Progress
+                        // Assessments, Enrollments, Feedback, Learning, Progress, Payments
                         .requestMatchers("/api/assessments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/learning/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers("/api/progress/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        .requestMatchers("/api/payments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
                         .requestMatchers(HttpMethod.POST, "/api/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/questions/**").hasRole("ADMIN")

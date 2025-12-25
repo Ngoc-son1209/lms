@@ -1,7 +1,7 @@
 // ✅ /src/pages/dashBoard/DPayments.jsx
 import React, { useEffect, useState } from "react";
-import { paymentService } from "../../api/payment.service";
 import { Table, Tag } from "antd";
+import { adminPaymentService } from "../../api/admin.payment.service";
 
 function DPayments() {
   const [payments, setPayments] = useState([]);
@@ -9,8 +9,8 @@ function DPayments() {
   useEffect(() => {
     const loadPayments = async () => {
       try {
-        const res = await paymentService.getAllPayments();
-        if (res && res.length > 0) setPayments(res);
+        const res = await adminPaymentService.listPayments();
+        if (res?.data && res.data.length > 0) setPayments(res.data);
       } catch (err) {
         console.error("Error loading payments:", err);
       }
