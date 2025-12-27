@@ -168,8 +168,8 @@ function Courses() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <p className="text-gray-500 text-lg mb-2">No courses found</p>
-            <p className="text-gray-400 text-sm">Try adjusting your search or filters</p>
+            <p className="text-gray-500 text-lg mb-2">Không tìm thấy khóa học</p>
+            <p className="text-gray-400 text-sm">Hãy thử tìm kiếm lại hoặc lọc lại</p>
           </div>
         ) : (
           <>
@@ -207,7 +207,7 @@ function Courses() {
                         onClick={() => navigate("/learnings")}
                         className="w-full py-3 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 font-semibold hover:from-green-100 hover:to-emerald-100 transition-all duration-200 border border-green-200 shadow-md hover:shadow-lg"
                       >
-                        ✓ Enrolled
+                        ✓ Đã đăng ký
                       </button>
                     ) : (
                       <button
