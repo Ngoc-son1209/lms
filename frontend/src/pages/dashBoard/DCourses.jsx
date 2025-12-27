@@ -92,6 +92,7 @@ function Courses() {
     setViewMode('classes');
   };
 
+
   // Apply keyword filter
   const filteredCourses = courses.filter((c) => {
     const kw = (filters.keyword || "").toLowerCase().trim();
@@ -165,7 +166,7 @@ function Courses() {
                           <h3 className="text-xl font-bold text-gray-900 truncate"> {course.course_name} </h3>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"> Active </span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                           {course.instructor && (<div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                             <span className="text-sm text-gray-600">Instructor:</span>
@@ -176,14 +177,23 @@ function Courses() {
                             (
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="text-sm text-gray-600">Price:</span>
-                                <span className="text-lg font-bold text-green-600">${course.price}</span>
+                                <span className="text-sm text-gray-600">Giá:</span>
+                                <span className="text-sm font-bold text-green-600">{course.price} VNĐ</span>
                               </div>
                             )}
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                            <span className="text-sm text-gray-600">Students:</span>
+                            <span className="text-sm text-gray-600">Tổng số học sinh:</span>
                             <span className="text-sm font-medium text-gray-900"> {course.studentCount ?? 0} </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${course.availabilityStatus === 'FULL' ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
+                            <span className="text-sm text-gray-600">Trạng thái:</span>
+                            <span className={`text-sm font-semibold ${course.availabilityStatus === 'FULL' ? 'text-red-600' : 'text-emerald-600'}`}
+                            >
+                              {course.availabilityStatus === 'FULL' ? 'Full' : 'Available'}
+                            </span>
                           </div>
                         </div>
                       </div>

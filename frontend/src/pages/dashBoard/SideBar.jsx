@@ -7,6 +7,7 @@ function SideBar({ current, onSelect }) {
     { key: "user", label: "Học viên", icon: "bx bxs-group" },
     { key: "courses", label: "Khóa học", icon: "bx bxs-book" },
     { key: "instructors", label: "Giảng viên", icon: "bx bxs-user-voice" },
+    { key: "payments", label: "Hóa đơn", icon: "bx bxs-receipt" },
   ];
 
   const handleLogout = async () => {

@@ -33,6 +33,7 @@ import InstructorStudents from './pages/instructor/InstructorStudents';
 import InstructorFeedback from './pages/instructor/InstructorFeedback';
 import InstructorClasses from './pages/instructor/InstructorClasses';
 import PaymentReturn from './pages/payment/PaymentReturn';
+import InstructorCourseQuestions from './pages/instructor/InstructorCourseQuestions';
 
 // Import các component bảo vệ Route
 import { AdminRoute, UserRoute, InstructorRoute } from "./Components/common/ProtectedRoute";
@@ -146,6 +147,7 @@ function App() {
           <Route path="/admin/course/:id/preview" element={<AdminRoute><AdminCoursePreview /></AdminRoute>} />
           <Route path="/admin/course/:id/classes" element={<AdminRoute><AdminCourseClasses /></AdminRoute>} />
           <Route path="/instructor/course/:id/preview" element={<InstructorRoute><CoursePreview /></InstructorRoute>} />
+          <Route path="/instructor/course/:courseId/questions" element={<InstructorRoute><InstructorCourseQuestions /></InstructorRoute>} />
 
           {/* ======================= Error Route ======================= */}
           <Route path='*' Component={ErrorPage}></Route>

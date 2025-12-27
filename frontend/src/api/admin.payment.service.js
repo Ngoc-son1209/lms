@@ -7,4 +7,9 @@ export const adminPaymentService = {
     const res = await api.get(`/api/admin/payments`, { params });
     return res.data;
   },
+
+  getPaymentDetail: async (paymentId) => {
+    const res = await api.get(`/api/admin/payments/${paymentId}`);
+    return res.data;
+  },
 };

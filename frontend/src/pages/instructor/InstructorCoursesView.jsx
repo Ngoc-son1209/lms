@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookOpen, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faBookOpen, faEye, faList } from "@fortawesome/free-solid-svg-icons";
 import { message, Card } from "antd";
 import { adminService } from "../../api/admin.service";
 import SearchFilter from "../../Components/common/SearchFilter";
@@ -112,7 +112,7 @@ function InstructorCoursesView() {
                                                 </div>
                                             </div>
                                         </div>
-                                        {/* View button only */}
+                                        {/* Actions */}
                                         <div className="flex items-center gap-2 ml-6">
                                             <button
                                                 onClick={() => navigate(`/instructor/course/${course.course_id}/preview`)}
@@ -120,6 +120,14 @@ function InstructorCoursesView() {
                                             >
                                                 <FontAwesomeIcon icon={faEye} className="text-sm" />
                                                 Xem chi tiết
+                                            </button>
+
+                                            <button
+                                                onClick={() => navigate(`/instructor/course/${course.course_id}/questions`)}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-medium rounded-lg transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+                                            >
+                                                <FontAwesomeIcon icon={faList} className="text-sm" />
+                                                Xem câu hỏi
                                             </button>
                                         </div>
                                     </div>

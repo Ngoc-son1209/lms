@@ -5,7 +5,6 @@ import com.lms.dev.dto.InstructorRegisterDTO;
 import com.lms.dev.entity.Instructor;
 import com.lms.dev.entity.User;
 import com.lms.dev.enums.ApprovalStatus;
-import com.lms.dev.enums.UserRole;
 import com.lms.dev.repository.InstructorRepository;
 import com.lms.dev.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -43,7 +42,7 @@ public class InstructorService {
                 .gender(dto.getGender())
                 .location(dto.getLocation())
                 .profession(dto.getProfession())
-                .role(UserRole.INSTRUCTOR)
+                .role(com.lms.dev.enums.UserRole.INSTRUCTOR)
                 .build();
         // Instructor phải chờ duyệt → approved = false; vẫn cần verify email
         user.setApproved(false);
@@ -206,9 +205,27 @@ public class InstructorService {
 
         User user = userRepository.findByEmail(ins.getEmail());
         if (user != null) {
-            // Hạ quyền về USER để vẫn có thể đăng nhập như học viên
-            user.setApproved(false); // phòng hờ nếu logic cũ còn kiểm tra approved
-            user.setRole(UserRole.USER);
+            // # NOTE: Không hạ quyền. Chỉ chặn đăng nhập bằng cách set approved=false
+            // AuthController đã chặn INSTRUCTOR nếu !approved
+            user.setApproved(false);
+            userRepository.save(user);
+        }
+        return Optional.of(toAdminDTO(ins, user));
+    }
+
+    @Transactional
+    public Optional<InstructorAdminDTO> restoreInstructor(UUID id) {
+        Optional<Instructor> opt = instructorRepository.findById(id);
+        if (opt.isEmpty()) return Optional.empty();
+
+        Instructor ins = opt.get();
+        ins.setStatus(ApprovalStatus.APPROVED);
+        instructorRepository.save(ins);
+
+        User user = userRepository.findByEmail(ins.getEmail());
+        if (user != null) {
+            // bật lại quyền login instructor
+            user.setApproved(true);
             userRepository.save(user);
         }
         return Optional.of(toAdminDTO(ins, user));
@@ -260,7 +277,7 @@ public class InstructorService {
                             dto.getUsername() != null ? dto.getUsername() : (user != null ? user.getUsername() : null))
                     .bio(dto.getBio())
                     .expertise(dto.getExpertise())
-                    .status(com.lms.dev.enums.ApprovalStatus.PENDING)
+                    .status(ApprovalStatus.PENDING)
                     .user(user)
                     .build();
         } else {

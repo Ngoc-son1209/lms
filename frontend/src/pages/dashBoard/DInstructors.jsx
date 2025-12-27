@@ -13,9 +13,11 @@ import {
   Input,
   Select,
 } from "antd";
-import { EyeOutlined, CheckCircleOutlined, EditOutlined, StopOutlined, RestOutlined } from "@ant-design/icons";
+import { EyeOutlined, CheckCircleOutlined, EditOutlined, StopOutlined, RestOutlined, ReloadOutlined } from "@ant-design/icons";
 import { adminService } from "../../api/admin.service";
+import { instructorAdminService } from "../../api/instructor.admin.service";
 import SearchFilter from "../../Components/common/SearchFilter";
+import { exportService } from "../../api/export.service";
 
 const { TextArea } = Input;
 
@@ -175,7 +177,7 @@ function DInstructors() {
     Modal.confirm({
       title: "Đánh dấu giảng viên đã nghỉ",
       icon: <RestOutlined />,
-      content: `Bạn có chắc đánh dấu \"${ins.fullName}\" là ĐÃ NGHỈ? Tài khoản sẽ bị hạ quyền giảng viên.`,
+      content: `Bạn có chắc đánh dấu \"${ins.fullName}\" là ĐÃ NGHỈ? Tài khoản sẽ bị chặn đăng nhập (không hạ quyền).`,
       okText: "Xác nhận",
       cancelText: "Hủy",
       okButtonProps: { danger: true },
@@ -191,7 +193,28 @@ function DInstructors() {
     });
   };
 
-  const buildColumns = (opts = { approveReject: false, allowResign: false }) => [
+  const handleRestore = (ins) => {
+    Modal.confirm({
+      title: "Khôi phục giảng viên",
+      icon: <ReloadOutlined />,
+      content: `Bạn có chắc muốn khôi phục giảng viên \"${ins.fullName}\"? Tài khoản sẽ được phép đăng nhập lại.`,
+      okText: "Khôi phục",
+      cancelText: "Hủy",
+      okButtonProps: { type: "primary" },
+      onOk: async () => {
+        try {
+          await instructorAdminService.restoreInstructor(ins.id);
+          message.success("Đã khôi phục giảng viên");
+          await Promise.all([loadPending(), loadApproved(), loadResigned()]);
+          setActiveKey("approved");
+        } catch (e) {
+          message.error(e?.response?.data?.message || "Khôi phục thất bại");
+        }
+      },
+    });
+  };
+
+  const buildColumns = (opts = { approveReject: false, allowResign: false, allowRestore: false }) => [
     {
       title: "Họ tên",
       dataIndex: "fullName",
@@ -266,6 +289,11 @@ function DInstructors() {
               Xóa
             </Button>
           )}
+          {opts.allowRestore && (
+            <Button icon={<ReloadOutlined />} size="small" onClick={() => handleRestore(record)}>
+              Khôi phục
+            </Button>
+          )}
         </Space>
       ),
     },
@@ -291,7 +319,7 @@ function DInstructors() {
 
   const columnsPending = useMemo(() => buildColumns({ approveReject: true }), []);
   const columnsApproved = useMemo(() => buildColumns({ allowResign: true }), []);
-  const columnsResigned = useMemo(() => buildColumns({ approveReject: false, allowResign: false }), []);
+  const columnsResigned = useMemo(() => buildColumns({ approveReject: false, allowResign: false, allowRestore: true }), []);
 
   const filteredPending = useMemo(() => applyFilter(pending), [pending, filters]);
   const filteredApproved = useMemo(() => applyFilter(approved), [approved, filters]);
@@ -371,8 +399,13 @@ function DInstructors() {
   return (
     <>
       <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Instructors Management</h1>
-        <p className="text-slate-600">Manage and review instructors</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Instructors Management</h1>
+            <p className="text-slate-600">Manage and review instructors</p>
+          </div>
+          <Button onClick={() => exportService.exportInstructors()}>Xuất Excel</Button>
+        </div>
       </div>
 
       <Card className="shadow-xl mb-4">

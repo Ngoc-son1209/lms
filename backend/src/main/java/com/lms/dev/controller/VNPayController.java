@@ -32,7 +32,7 @@ public class VNPayController {
             throws Exception {
         // # NOTE: Giữ lại endpoint cũ để tương thích FE hiện tại.
         // Về sau nên migrate sang endpoint mới chỉ cần courseId và lấy userId từ JWT.
-
+        
         String vnpTxnRef = String.valueOf(System.currentTimeMillis());
         String orderInfo = "Thanh toan khoa hoc " + courseId + " - " + vnpTxnRef;
 

@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 import SideBar from "./SideBar";
 import Users from "./DUsers";
 import Instructors from "./DInstructors";
+import Payments from "./DPayments";
 
 import { authService } from "../../api/auth.service";
 
@@ -21,6 +22,8 @@ function AdminDashboard() {
         return <Courses />;
       case "instructors":
         return <Instructors />;
+      case "payments":
+        return <Payments />;
       default:
         return <Dashboard isAuthenticated={isAuthenticated} />;
     }

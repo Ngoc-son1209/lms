@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Card,
@@ -13,7 +13,8 @@ import {
   Divider,
   Table,
   Modal,
-  Popconfirm
+  Popconfirm,
+  Tag
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -22,15 +23,39 @@ import {
   faPlus,
   faEdit,
   faTrash,
-  faList
+  faList,
+  faEye,
+  faCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { EditOutlined, RestOutlined } from "@ant-design/icons";
 import { adminService } from '../../api/admin.service';
 import { questionService } from '../../api/question.service';
+import SearchFilter from '../../Components/common/SearchFilter';
+
+const normalizeOption = (v) => (v ?? "").toString().trim().replace(/\s+/g, " ").toLowerCase();
+
+const uniqueOptionsRule = (getFieldValue) => ({
+  validator: async () => {
+    const fields = ["option1", "option2", "option3", "option4"];
+    const normalized = fields.map((f) => normalizeOption(getFieldValue(f)));
+    const filled = normalized.filter((x) => x.length > 0);
+    const set = new Set(filled);
+    if (set.size !== filled.length) {
+      throw new Error("Các option không được trùng nhau");
+    }
+    return true;
+  },
+});
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
+
+const ellipsisText = (text, max = 120) => {
+  const s = (text ?? "").toString();
+  if (s.length <= max) return s;
+  return s.slice(0, max) + "...";
+};
 
 function AddQuestion({ courseId, onBack }) {
   const location = useLocation();
@@ -41,8 +66,12 @@ function AddQuestion({ courseId, onBack }) {
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false); // New state for Add Modal
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [editForm] = Form.useForm();
+
+  const [viewModal, setViewModal] = useState({ open: false, record: null });
+
+  const [filters, setFilters] = useState({ keyword: "" });
 
   useEffect(() => {
     fetchQuestions();
@@ -172,44 +201,54 @@ function AddQuestion({ courseId, onBack }) {
     }
   };
 
-  const handleCancel = () => {
-    navigate(-1);
-  };
+  const filteredQuestions = useMemo(() => {
+    const kw = (filters.keyword || "").toLowerCase().trim();
+    if (!kw) return questions || [];
+
+    return (questions || []).filter((q) =>
+      [q.question, q.answer, q.option1, q.option2, q.option3, q.option4]
+        .filter(Boolean)
+        .some((x) => String(x).toLowerCase().includes(kw))
+    );
+  }, [questions, filters]);
 
   const columns = [
     {
       title: 'Câu hỏi',
       dataIndex: 'question',
       key: 'question',
-      width: '85%',
       render: (text) => (
-        <div>
-          <Text ellipsis={{ tooltip: text }}>{text}</Text>
-        </div>
+        <Text title={text}>{ellipsisText(text, 120)}</Text>
       ),
     },
     {
-      title: 'Câu trả lời',
+      title: 'Đáp án đúng',
       dataIndex: 'answer',
       key: 'answer',
-      width: '85%',
+      width: 260,
       render: (text) => (
-        <div>
-          <Text ellipsis={{ tooltip: text }}>{text}</Text>
-        </div>
+        <Text title={text}>{ellipsisText(text, 60)}</Text>
       ),
     },
     {
       title: 'Hành động',
       key: 'actions',
+      width: 260,
       render: (_, record) => (
         <div className="flex gap-2">
+          <Button
+            size="small"
+            onClick={() => setViewModal({ open: true, record })}
+          >
+            <FontAwesomeIcon icon={faEye} className="mr-2" /> Xem
+          </Button>
           <Button
             type="primary"
             icon={<EditOutlined />}
             size="small"
             onClick={() => handleEdit(record)}
-          > Sửa
+          >
+            Sửa
           </Button>
           <Popconfirm
             title="Xóa câu hỏi"
@@ -218,10 +257,8 @@ function AddQuestion({ courseId, onBack }) {
             okText="Có"
             cancelText="Không"
           >
-            <Button
-              danger icon={<RestOutlined />}
-              size="small"
-            > Xóa
+            <Button danger icon={<RestOutlined />} size="small">
+              Xóa
             </Button>
           </Popconfirm>
         </div>
@@ -261,9 +298,11 @@ function AddQuestion({ courseId, onBack }) {
           <Form.Item
             label="Option A"
             name="option1"
+            dependencies={["option2", "option3", "option4"]}
             rules={[
               { required: true, message: 'Option A là bắt buộc' },
-              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' },
+              uniqueOptionsRule(form.getFieldValue)
             ]}
           >
             <Input placeholder="Nhập option A" className="rounded-lg" />
@@ -273,9 +312,11 @@ function AddQuestion({ courseId, onBack }) {
           <Form.Item
             label="Option B"
             name="option2"
+            dependencies={["option1", "option3", "option4"]}
             rules={[
               { required: true, message: 'Option B là bắt buộc' },
-              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' },
+              uniqueOptionsRule(form.getFieldValue)
             ]}
           >
             <Input placeholder="Nhập option B" className="rounded-lg" />
@@ -288,9 +329,11 @@ function AddQuestion({ courseId, onBack }) {
           <Form.Item
             label="Option C"
             name="option3"
+            dependencies={["option1", "option2", "option4"]}
             rules={[
               { required: true, message: 'Option C là bắt buộc' },
-              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' },
+              uniqueOptionsRule(form.getFieldValue)
             ]}
           >
             <Input placeholder="Nhập option C" className="rounded-lg" />
@@ -300,9 +343,11 @@ function AddQuestion({ courseId, onBack }) {
           <Form.Item
             label="Option D"
             name="option4"
+            dependencies={["option1", "option2", "option3"]}
             rules={[
               { required: true, message: 'Option D là bắt buộc' },
-              { max: 200, message: 'Option không được vượt quá 200 ký tự' }
+              { max: 200, message: 'Option không được vượt quá 200 ký tự' },
+              uniqueOptionsRule(form.getFieldValue)
             ]}
           >
             <Input placeholder="Nhập option D" className="rounded-lg" />
@@ -326,7 +371,7 @@ function AddQuestion({ courseId, onBack }) {
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
         <Button
           onClick={() => {
-            if (submitText.includes('Add')) {
+            if (submitText.includes('Thêm')) {
               setIsAddModalVisible(false);
             } else {
               setIsEditModalVisible(false);
@@ -344,7 +389,6 @@ function AddQuestion({ courseId, onBack }) {
           loading={loading}
           className="bg-blue-600 hover:bg-blue-700 rounded-lg px-6"
         >
-          {/* <FontAwesomeIcon icon={faPlus} className="mr-2" /> */}
           {submitText}
         </Button>
       </div>
@@ -386,18 +430,28 @@ function AddQuestion({ courseId, onBack }) {
           </div>
         </Card>
 
-        {/* Questions List - Now Full Width */}
+        {/* Search */}
+        <Card className="shadow-xl mb-4">
+          <SearchFilter
+            fields={[{ type: "input", name: "keyword", label: "Từ khóa", placeholder: "Tìm câu hỏi/đáp án" }]}
+            initialValues={filters}
+            onChange={setFilters}
+            debounce={250}
+          />
+        </Card>
+
+        {/* Questions List */}
         <Card className="rounded-2xl shadow-sm border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <Title level={3} className="!mb-0 !text-gray-800">
               <FontAwesomeIcon icon={faList} className="mr-2 text-green-600" />
-              Danh sách câu hỏi ({questions.length})
+              Danh sách câu hỏi ({filteredQuestions.length})
             </Title>
           </div>
 
           <Table
             columns={columns}
-            dataSource={questions}
+            dataSource={filteredQuestions}
             rowKey="id"
             loading={loadingQuestions}
             pagination={{
@@ -440,7 +494,7 @@ function AddQuestion({ courseId, onBack }) {
           title={
             <div className="flex items-center gap-3">
               <FontAwesomeIcon icon={faEdit} className="text-blue-600" />
-              <span>Cập nhật câu hỏi</span>
+              <span>Sửa câu hỏi</span>
             </div>
           }
           open={isEditModalVisible}
@@ -456,9 +510,55 @@ function AddQuestion({ courseId, onBack }) {
           <QuestionForm
             form={editForm}
             onFinish={handleEditSubmit}
-            loading={false}
-            submitText="Cập nhật"
+            loading={loading}
+            submitText={loading ? 'Cập nhật...' : 'Cập nhật'}
+            initialValues={editingQuestion}
           />
+        </Modal>
+
+        {/* View Detail Modal (UI giống học viên) */}
+        <Modal
+          open={viewModal.open}
+          onCancel={() => setViewModal({ open: false, record: null })}
+          footer={null}
+          width={900}
+          className="assessment-modal"
+        >
+          {viewModal.record && (
+            <div className="min-h-[200px]">
+              <div className="bg-indigo-100 border-b border-indigo-200 p-4 rounded-t-xl text-start">
+                <h3 className="text-lg font-semibold pr-8">{viewModal.record.question}</h3>
+              </div>
+
+              <div className="p-6 space-y-3">
+                {[viewModal.record.option1, viewModal.record.option2, viewModal.record.option3, viewModal.record.option4].map((opt, idx) => {
+                  const isCorrect = viewModal.record.answer === opt;
+                  return (
+                    <div
+                      key={idx}
+                      className={`flex items-center p-3 rounded-xl transition-all duration-200 border-2 ${isCorrect
+                        ? 'bg-indigo-100 border-indigo-500 text-indigo-800'
+                        : 'bg-gray-50 border-transparent'
+                        }`}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 ${isCorrect
+                          ? 'border-indigo-500 bg-indigo-500'
+                          : 'border-gray-300'
+                          }`}
+                      >
+                        {isCorrect && (
+                          <FontAwesomeIcon icon={faCheck} className="text-white text-xs" />
+                        )}
+                      </div>
+                      <div className="flex-1 text-gray-700 font-medium break-words">{opt}</div>
+                      {isCorrect && <Tag color="blue">Đáp án đúng</Tag>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </Modal>
       </div>
     </div>

@@ -58,6 +58,10 @@ groq:
 # ===============================================
 # VNPAY CONFIGURATION
 # ===============================================
-
+vnpay:
+  tmnCode: ${VNPAY_TMN_CODE:XKHN60UT}
+  hashSecret: ${VNPAY_HASH_SECRET:OJ0IBFQEKRFEB04D4EK9WUCP1CTTPK1Q}
+  url: ${VNPAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+  returnUrl: ${VNPAY_RETURN_URL:http://localhost:3000/payment-return}
 
 
