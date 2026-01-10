@@ -488,7 +488,7 @@ function RegistrationForm() {
                         icon={<Briefcase className="h-5 w-5 text-gray-400" />}
                         label="Chuyên Môn"
                         required
-                        placeholder="Ví dụ: Java, Spring Boot, Microservices"
+                        placeholder="Ví dụ: Tiếng Anh, Tiếng Nhật, Tiếng Hàn"
                       />
                       {fieldErrors.expertise && (
                         <div className="flex items-center gap-2 mt-2 text-red-600 text-sm">

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.lms.dev.dto.ClassSectionDetailDTO;
 import com.lms.dev.dto.EnrollRequest;
 import com.lms.dev.dto.StudentDetailDTO;
-import com.lms.dev.entity.ClassSection;
 import com.lms.dev.entity.Course;
 import com.lms.dev.entity.Learning;
 import com.lms.dev.entity.User;
@@ -100,6 +99,17 @@ public class LearningController {
         }
 
         List<ClassSectionDetailDTO> classes = learningService.getClassesByInstructor(user.getId(), courseId);
+        return ResponseEntity.ok(classes);
+    }
+
+    // New: Get classes for current student
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/my-classes")
+    public ResponseEntity<List<ClassSectionDetailDTO>> getMyClasses(
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        // principal.getId() is already the current user's id
+        List<ClassSectionDetailDTO> classes = learningService.getClassesByStudent(principal.getId());
         return ResponseEntity.ok(classes);
     }
 }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faChalkboardUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faChalkboardUser, faChalkboardTeacher } from "@fortawesome/free-solid-svg-icons";
 import { authService } from "../../api/auth.service";
 
 function Navbar(props) {
@@ -68,27 +68,7 @@ function Navbar(props) {
 
       {isAuthenticated && (
         <>
-          {value === "profile" ? (
-            <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
-              <Link
-                to={"/profile"}
-                className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
-              >
-                Hồ sơ
-                <FontAwesomeIcon icon={faUser} className="ml-1" />
-              </Link>
-            </li>
-          ) : (
-            <li className="list-none ml-5">
-              <Link
-                to={"/profile"}
-                className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
-              >
-                Hồ sơ
-                <FontAwesomeIcon icon={faUser} className="ml-1" />
-              </Link>
-            </li>
-          )}
+
 
           {value === "learnings" ? (
             <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
@@ -108,6 +88,50 @@ function Navbar(props) {
               >
                 Học tập
                 <FontAwesomeIcon icon={faChalkboardUser} className="ml-1" />
+              </Link>
+            </li>
+          )}
+
+          {value === "my-classes" ? (
+            <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
+              <Link
+                to={"/my-classes"}
+                className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
+              >
+                Lớp học
+                <FontAwesomeIcon icon={faChalkboardTeacher} className="ml-1" />
+              </Link>
+            </li>
+          ) : (
+            <li className="list-none ml-5">
+              <Link
+                to={"/my-classes"}
+                className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
+              >
+                Lớp học
+                <FontAwesomeIcon icon={faChalkboardTeacher} className="ml-1" />
+              </Link>
+            </li>
+          )}
+
+          {value === "profile" ? (
+            <li className="list-none ml-5 rounded-[5px] bg-gradient-to-r from-blue-600 to-purple-600">
+              <Link
+                to={"/profile"}
+                className="no-underline text-white text-[17px] font-bold transition-all duration-300 ease-in-out px-[10px] py-[2px] block hover:text-yellow-400"
+              >
+                Hồ sơ
+                <FontAwesomeIcon icon={faUser} className="ml-1" />
+              </Link>
+            </li>
+          ) : (
+            <li className="list-none ml-5">
+              <Link
+                to={"/profile"}
+                className="no-underline text-[rgb(21,21,100)] text-[17px] font-bold transition-all duration-300 ease-in-out hover:text-yellow-400"
+              >
+                Hồ sơ
+                <FontAwesomeIcon icon={faUser} className="ml-1" />
               </Link>
             </li>
           )}

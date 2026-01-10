@@ -20,7 +20,18 @@ async function enrollCourse(userId, courseId) {
   }
 }
 
+async function getMyClasses() {
+  try {
+    const { data } = await api.get(`/api/learning/my-classes`);
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching my classes:", error);
+    return { success: false, error: "Could not fetch classes" };
+  }
+}
+
 export const learningService = {
   getEnrollments,
   enrollCourse,
+  getMyClasses,
 };

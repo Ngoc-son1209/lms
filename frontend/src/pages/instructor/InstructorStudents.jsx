@@ -96,8 +96,8 @@ export default function InstructorStudents() {
             <main className="p-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900">Students Management</h1>
-                        <p className="text-slate-600">View and manage students by course</p>
+                        <h1 className="text-3xl font-bold text-gray-900">Quản lý học viên</h1>
+                        <p className="text-slate-600">Xem và quản lý học viên theo khóa học</p>
                     </div>
 
                     {/* Search bar with course select, class select + keyword */}

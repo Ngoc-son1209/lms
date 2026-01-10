@@ -185,11 +185,11 @@ function Courses() {
                       alt={course.course_name}
                       className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
-                    <div className="absolute top-3 right-3">
+                    {/* <div className="absolute top-3 right-3">
                       <span className="bg-white/90 backdrop-blur-sm text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
                         {course.price}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="p-6">
@@ -197,10 +197,10 @@ function Courses() {
                       {course.course_name.length < 8 ? `${course.course_name} Tutorial` : course.course_name}
                     </h3>
 
-                    {/* <p className="text-gray-500 text-sm mb-6 flex items-center">
+                    <p className="text-gray-500 text-xl mb-6 flex items-center">
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                      by {course.instructor}
-                    </p> */}
+                      {course.price} VNĐ
+                    </p>
 
                     {enrolled.includes(course.course_id) ? (
                       <button

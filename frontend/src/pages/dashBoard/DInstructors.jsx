@@ -401,8 +401,8 @@ function DInstructors() {
       <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Instructors Management</h1>
-            <p className="text-slate-600">Manage and review instructors</p>
+            <h1 className="text-3xl font-bold text-gray-900">Quản lý giảng viên</h1>
+            <p className="text-slate-600">Quản lý và xem giảng viên</p>
           </div>
           <Button onClick={() => exportService.exportInstructors()}>Xuất Excel</Button>
         </div>

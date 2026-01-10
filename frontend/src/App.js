@@ -9,6 +9,7 @@ import Course from './pages/course/course';
 import Courses from './pages/course/Courses';
 import Profile from './pages/profile/profile';
 import Learnings from './pages/learning/learnings';
+import MyClasses from './pages/learning/MyClasses';
 import Home from './pages/landing/Home';
 import DUsers from './pages/dashBoard/DUsers';
 import DCourses from './pages/dashBoard/DCourses';
@@ -63,6 +64,10 @@ function App() {
           <Route
             path='/Learnings'
             element={<StudentOnlyRoute><Learnings /></StudentOnlyRoute>}
+          />
+          <Route
+            path='/my-classes'
+            element={<StudentOnlyRoute><MyClasses /></StudentOnlyRoute>}
           />
           <Route
             path='/Performance'

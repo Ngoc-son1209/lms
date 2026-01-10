@@ -45,8 +45,8 @@ function InstructorCoursesView() {
         <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div className="px-8 py-6 border-b border-gray-100 bg-gradient-to-br from-indigo-100 to-purple-100">
-                    <div className="flex items-center justify-between">
-                        <div>
+                    <div className="flex items-center justify-center">
+                        <div className="text-center">
                             <h1 className="text-3xl font-bold text-gray-900 mb-1">Danh sách khóa học</h1>
                             <p className="text-gray-600">Xem thông tin các khóa học</p>
                         </div>

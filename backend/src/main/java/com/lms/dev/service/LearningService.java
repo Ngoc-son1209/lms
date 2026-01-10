@@ -166,6 +166,59 @@ public class LearningService {
                 .collect(Collectors.toList());
     }
 
+    // Get classes by student (current user) with full details
+    public List<ClassSectionDetailDTO> getClassesByStudent(UUID studentId) {
+        User student = userRepository.findById(studentId).orElse(null);
+        if (student == null) {
+            return Collections.emptyList();
+        }
+
+        List<Learning> learningRecords = learningRepository.findByUser(student);
+
+        // Collect unique class sections from enrollments
+        Map<UUID, ClassSection> classSectionMap = new LinkedHashMap<>();
+        for (Learning learning : learningRecords) {
+            ClassSection cs = learning.getClassSection();
+            if (cs != null && cs.getId() != null) {
+                classSectionMap.putIfAbsent(cs.getId(), cs);
+            }
+        }
+
+        return classSectionMap.values().stream()
+                .map(classSection -> {
+                    Course course = classSection.getCourse();
+
+                    String instructorName = null;
+                    if (classSection.getInstructorId() != null) {
+                        User instructor = userRepository.findById(classSection.getInstructorId()).orElse(null);
+                        if (instructor != null) {
+                            instructorName = instructor.getUsername();
+                        }
+                    }
+
+                    int studentCount = (int) learningRepository.countByClassSection(classSection);
+
+                    return ClassSectionDetailDTO.builder()
+                            .id(classSection.getId())
+                            .name(classSection.getName())
+                            .code(classSection.getCode())
+                            .instructorId(classSection.getInstructorId())
+                            .instructorName(instructorName)
+                            .capacity(classSection.getCapacity())
+                            .currentStudentCount(studentCount)
+                            .status(classSection.getStatus())
+                            .course(ClassSectionDetailDTO.CourseBasicDTO.builder()
+                                    .course_id(course.getCourse_id())
+                                    .course_name(course.getCourse_name())
+                                    .description(course.getDescription())
+                                    .build())
+                            .createdAt(classSection.getCreatedAt())
+                            .updatedAt(classSection.getUpdatedAt())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
     // Get classes by instructor with full details
     public List<ClassSectionDetailDTO> getClassesByInstructor(UUID instructorId, UUID courseId) {
         List<ClassSection> classSections;
