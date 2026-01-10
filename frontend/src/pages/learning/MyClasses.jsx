@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, message, Table, Tag } from "antd";
 import Navbar from "../../Components/common/Navbar";
+import SearchFilter from "../../Components/common/SearchFilter";
 import { learningService } from "../../api/learning.service";
 
 export default function MyClasses() {
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState([]);
+  const [filters, setFilters] = useState({ q: "" });
 
   const fetchMyClasses = async () => {
     setLoading(true);
@@ -27,6 +29,26 @@ export default function MyClasses() {
     fetchMyClasses();
   }, []);
 
+  const filteredClasses = useMemo(() => {
+    const q = (filters.q || "").trim().toLowerCase();
+    if (!q) return classes;
+
+    return (classes || []).filter((r) => {
+      const name = (r.name || "").toString().toLowerCase();
+      const code = (r.code || "").toString().toLowerCase();
+      const course = (r.course?.course_name || r.course?.name || r.courseName || "").toString().toLowerCase();
+      const instructor = (r.instructorName || r.instructor?.name || r.instructor?.username || "").toString().toLowerCase();
+      const status = (r.status || "").toString().toLowerCase();
+      return (
+        name.includes(q) ||
+        code.includes(q) ||
+        course.includes(q) ||
+        instructor.includes(q) ||
+        status.includes(q)
+      );
+    });
+  }, [classes, filters.q]);
+
   const columns = [
     {
       title: "Lớp",
@@ -35,7 +57,7 @@ export default function MyClasses() {
       render: (v, r) => (
         <div>
           <div className="font-semibold text-gray-900">{v || "N/A"}</div>
-          {r.code ? <div className="text-xs text-gray-500">{r.code}</div> : null}
+          {/* {r.code ? <div className="text-xs text-gray-500">{r.code}</div> : null} */}
         </div>
       ),
     },
@@ -48,7 +70,7 @@ export default function MyClasses() {
       title: "Giảng viên phụ trách",
       dataIndex: "instructorName",
       key: "instructorName",
-      render: (v, r) => v || r.instructor?.name || r.instructor?.username || "N/A",
+      render: (v) => v || "N/A",
     },
     {
       title: "Trạng thái",
@@ -77,9 +99,22 @@ export default function MyClasses() {
           </div>
 
           <Card className="shadow-xl">
+            <SearchFilter
+              fields={[
+                {
+                  type: "input",
+                  name: "q",
+                  placeholder: "Tìm theo lớp, mã lớp, khóa học, giảng viên, trạng thái...",
+                },
+              ]}
+              initialValues={filters}
+              onChange={(v) => setFilters((s) => ({ ...s, ...v }))}
+              className="mb-4"
+            />
+
             <Table
               columns={columns}
-              dataSource={classes}
+              dataSource={filteredClasses}
               rowKey={(r) => r.id || `${r.classSectionId || ""}-${r.courseId || ""}-${r.name || ""}`}
               loading={loading}
               pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true }}
