@@ -138,22 +138,22 @@ function Courses() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600"></div>
-                <p className="mt-4 text-gray-600 font-medium">Loading your courses...</p>
+                <p className="mt-4 text-gray-600 font-medium">Đang tải khóa học...</p>
               </div>
             ) : courses.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                   <FontAwesomeIcon icon={faBookOpen} className="text-3xl text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">No courses yet</h3>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Chưa có khóa học nào</h3>
                 <p className="text-gray-500 mb-8 max-w-md">
-                  Get started by creating your first course. You can add content, manage students, and track progress.
+                  Bắt đầu bằng cách tạo khóa học của bạn. Bạn có thể thêm nội dung, quản lý học viên và theo dõi tiến trình.
                 </p>
                 <button
                   onClick={openAddCourseModal}
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl px-8 py-4 font-semibold transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  Create Your First Course
+                  Tạo Khóa Học Đầu Tiên
                 </button>
               </div>
             ) : (
@@ -169,7 +169,7 @@ function Courses() {
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                           {course.instructor && (<div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span className="text-sm text-gray-600">Instructor:</span>
+                            <span className="text-sm text-gray-600">Giảng viên:</span>
                             <span className="text-sm font-medium text-gray-900"> {course.instructor} </span>
                           </div>
                           )}
@@ -183,18 +183,18 @@ function Courses() {
                             )}
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                            <span className="text-sm text-gray-600">Tổng số học sinh:</span>
+                            <span className="text-sm text-gray-600">Tổng số học viên:</span>
                             <span className="text-sm font-medium text-gray-900"> {course.studentCount ?? 0} </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          {/* <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${course.availabilityStatus === 'FULL' ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
                             <span className="text-sm text-gray-600">Trạng thái:</span>
                             <span className={`text-sm font-semibold ${course.availabilityStatus === 'FULL' ? 'text-red-600' : 'text-emerald-600'}`}
                             >
                               {course.availabilityStatus === 'FULL' ? 'Full' : 'Available'}
                             </span>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                       {/* Actions */}

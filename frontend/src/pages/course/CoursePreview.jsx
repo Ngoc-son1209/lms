@@ -65,8 +65,8 @@ export default function CoursePreview() {
         return y;
     }, [course?.y_link]);
 
-    if (loading) return <div className="text-center py-10">Loading...</div>;
-    if (error || !course) return <div className="text-center text-red-500 py-10">Can not load course.</div>;
+    if (loading) return <div className="text-center py-10">Đang tải khóa học...</div>;
+    if (error || !course) return <div className="text-center text-red-500 py-10">Không thể tải khóa học.</div>;
 
     return (
         <div className="min-h-screen py-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -103,7 +103,7 @@ export default function CoursePreview() {
                     <div className="mt-8 bg-white shadow-2xl rounded-xl p-6">
                         <div className="flex items-center gap-2 mb-3">
                             <BookOpen className="w-5 h-5 text-primary" />
-                            <h4 className="text-lg font-semibold text-neutral">Description</h4>
+                            <h4 className="text-lg font-semibold text-neutral">Mô tả</h4>
                         </div>
                         <p className="text-gray-700 whitespace-pre-wrap">{course.description}</p>
                     </div>
@@ -127,7 +127,7 @@ export default function CoursePreview() {
                             onClick={() => setIsDiscussionOpen(true)}
                         >
                             <MessageSquare className="w-4 h-4" />
-                            Discussion
+                            Diễn đàn
                         </button>
                     </div>
 
@@ -136,7 +136,7 @@ export default function CoursePreview() {
                     </div>
 
                     <Modal
-                        title={<div className="font-semibold">Discussion Forum</div>}
+                        title={<div className="font-semibold">Diễn đàn</div>}
                         open={isDiscussionOpen}
                         onCancel={() => setIsDiscussionOpen(false)}
                         footer={null}

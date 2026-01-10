@@ -246,7 +246,7 @@ async function getInstructorStudents(courseId, classSectionId) {
     const params = {};
     if (courseId) params.courseId = courseId;
     if (classSectionId) params.classSectionId = classSectionId;
-    
+
     const { data } = await api.get(`/api/learning/instructor/students`, { params });
     return { success: true, data };
   } catch (error) {
@@ -259,7 +259,7 @@ async function getInstructorClasses(courseId) {
   try {
     const params = {};
     if (courseId) params.courseId = courseId;
-    
+
     const { data } = await api.get(`/api/learning/instructor/classes`, { params });
     return { success: true, data };
   } catch (error) {
@@ -318,6 +318,16 @@ async function deleteClassSection(id) {
   }
 }
 
+async function getAdminStats() {
+  try {
+    const { data } = await api.get("/api/admin/stats");
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error fetching admin stats:", error);
+    return { success: false, error: "Could not fetch admin stats" };
+  }
+}
+
 export const adminService = {
   getAllCourses,
   getMyCourses,
@@ -333,6 +343,7 @@ export const adminService = {
   getAllUsers,
   updateUser,
   getAllLearning,
+  getAdminStats,
   getPendingInstructors,
   getApprovedInstructors,
   getResignedInstructors,

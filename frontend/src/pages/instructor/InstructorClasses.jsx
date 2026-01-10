@@ -81,7 +81,7 @@ export default function InstructorClasses() {
             render: (v) => v || "N/A",
         },
         {
-            title: "Progress",
+            title: "Tiến độ",
             dataIndex: "progressPercent",
             key: "progressPercent",
             width: 140,
@@ -96,7 +96,7 @@ export default function InstructorClasses() {
             ),
         },
         {
-            title: "Score",
+            title: "Điểm",
             dataIndex: "score",
             key: "score",
             width: 80,

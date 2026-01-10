@@ -16,7 +16,7 @@ import Assessment from './pages/assessment/Assessment';
 import ErrorPage from './pages/error/ErrorPage';
 import AddQuestions from './pages/dashBoard/AddQuestions';
 import Performance from './pages/profile/Performance';
-import certificate from './pages/assessment/certificate';
+import Certificate from './pages/assessment/certificate';
 import Forum from './pages/course/forum';
 import CoursePreview from './pages/course/CoursePreview';
 import AdminCoursePreview from './pages/dashBoard/AdminCoursePreview';
@@ -36,7 +36,7 @@ import PaymentReturn from './pages/payment/PaymentReturn';
 import InstructorCourseQuestions from './pages/instructor/InstructorCourseQuestions';
 
 // Import các component bảo vệ Route
-import { AdminRoute, UserRoute, InstructorRoute } from "./Components/common/ProtectedRoute";
+import { AdminRoute, UserRoute, InstructorRoute, StudentOnlyRoute } from "./Components/common/ProtectedRoute";
 
 function App() {
   return (
@@ -50,19 +50,34 @@ function App() {
           <Route path='/reset-password' Component={ResetPassword}></Route>
 
           {/* ======================= Public & User Routes ======================= */}
-          <Route path='/' Component={Home}></Route>
-          <Route path='/courses' Component={Courses}></Route>
-          <Route path='/course/:id' Component={Course}></Route>
-          <Route path='/discussion/:id' Component={Forum}></Route>
-          <Route path='/payment-return' Component={PaymentReturn}></Route>
+          <Route path='/' element={<UserRoute><Home /></UserRoute>} />
+          <Route path='/courses' element={<StudentOnlyRoute><Courses /></StudentOnlyRoute>} />
+          <Route path='/course/:id' element={<UserRoute><Course /></UserRoute>} />
+          <Route path='/discussion/:id' element={<UserRoute><Forum /></UserRoute>} />
+          <Route path='/payment-return' element={<UserRoute><PaymentReturn /></UserRoute>} />
 
-          <Route path='/profile' Component={Profile}></Route>
-          <Route path='/Learnings' Component={Learnings}></Route>
-          <Route path='/Performance' Component={Performance} />
+          <Route
+            path='/profile'
+            element={<UserRoute><Profile /></UserRoute>}
+          />
+          <Route
+            path='/Learnings'
+            element={<StudentOnlyRoute><Learnings /></StudentOnlyRoute>}
+          />
+          <Route
+            path='/Performance'
+            element={<UserRoute><Performance /></UserRoute>}
+          />
 
           {/* Course-specific actions (Assessment & Certificate) */}
-          <Route path='/assessment/:id' Component={Assessment}></Route>
-          <Route path='/certificate/:courseId' Component={certificate}></Route>
+          <Route
+            path='/assessment/:id'
+            element={<UserRoute><Assessment /></UserRoute>}
+          />
+          <Route
+            path='/certificate/:courseId'
+            element={<UserRoute><Certificate /></UserRoute>}
+          />
 
           {/* ======================= INSTRUCTOR Routes (Mới) ======================= */}
           <Route

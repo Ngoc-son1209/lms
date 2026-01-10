@@ -77,7 +77,7 @@ export default function InstructorStudents() {
         { title: "Mã lớp", dataIndex: "classCode", key: "classCode", width: 100, render: (v) => v || "N/A" },
         { title: "Khóa học", dataIndex: "courseName", key: "courseName", width: 180 },
         {
-            title: "Progress",
+            title: "Tiến độ",
             dataIndex: "progressPercent",
             key: "progressPercent",
             width: 140,
@@ -87,7 +87,7 @@ export default function InstructorStudents() {
                 </div>
             ),
         },
-        { title: "Score", dataIndex: "score", key: "score", width: 80, render: (v) => (v === null || v === undefined ? "N/A" : v) },
+        { title: "Điểm", dataIndex: "score", key: "score", width: 80, render: (v) => (v === null || v === undefined ? "N/A" : v) },
     ];
 
     return (

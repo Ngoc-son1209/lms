@@ -228,7 +228,7 @@ function Courses() {
                   onClick={loadMore}
                   className="px-8 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200"
                 >
-                  Load More Courses
+                  Tải thêm khóa học
                 </button>
               </div>
             )}

@@ -71,13 +71,21 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/classes/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/classes/**").hasRole("ADMIN")
 
-                        // Assessments, Enrollments, Feedback, Learning, Progress, Payments
-                        .requestMatchers("/api/assessments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/learning/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/progress/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
-                        .requestMatchers("/api/payments/**").hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+                        // Assessments, Enrollments, Feedback, Learning, Progress
+                        // Cho phép HỌC VIÊN + GIẢNG VIÊN truy cập (Admin bị chặn)
+                        .requestMatchers("/api/assessments/**").hasAnyRole("USER", "INSTRUCTOR")
+                        .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "INSTRUCTOR")
+                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "INSTRUCTOR")
+                        .requestMatchers("/api/learning/**").hasAnyRole("USER", "INSTRUCTOR")
+                        .requestMatchers("/api/progress/**").hasAnyRole("USER", "INSTRUCTOR")
+
+                        // Payments (mua khóa học): chỉ HỌC VIÊN được phép
+                        .requestMatchers(HttpMethod.POST, "/api/payments/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/**").hasAnyRole("USER", "INSTRUCTOR")
+
+                        // VNPay create-payment (endpoint cũ đang nhận userId/courseId từ query): chỉ
+                        // học viên
+                        .requestMatchers(HttpMethod.GET, "/api/vnpay/create-payment").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/questions/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/questions/**").hasRole("ADMIN")

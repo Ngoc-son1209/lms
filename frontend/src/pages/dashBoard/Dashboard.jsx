@@ -13,6 +13,18 @@ function Dashboard({ isAuthenticated }) {
     }
 
     async function fetchData() {
+      // Dùng endpoint tổng hợp để lấy đủ số liệu cho Dashboard (nhanh + ổn định quyền)
+      const statsRes = await adminService.getAdminStats();
+      if (statsRes.success) {
+        // API trả dạng ApiResponse { message, data }
+        const dto = statsRes.data?.data;
+        setUserscount(dto?.totalUsers ?? 0);
+        setCoursescount(dto?.totalCourses ?? 0);
+        setEnrolled(dto?.totalEnrollments ?? 0);
+        return;
+      }
+
+      // Fallback (trường hợp API stats chưa chạy)
       const usersRes = await adminService.getAllUsers();
       if (usersRes.success) setUserscount(usersRes.data.length);
 

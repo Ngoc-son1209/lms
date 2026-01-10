@@ -354,7 +354,7 @@ function DInstructors() {
   const items = [
     {
       key: "approved",
-      label: "Đã duyệt",
+      label: `Đã duyệt (${filteredApproved.length})`,
       children: (
         <Table
           columns={columnsApproved}
@@ -368,7 +368,7 @@ function DInstructors() {
     },
     {
       key: "pending",
-      label: "Chờ duyệt",
+      label: `Chờ duyệt (${filteredPending.length})`,
       children: (
         <Table
           columns={columnsPending}
@@ -382,7 +382,7 @@ function DInstructors() {
     },
     {
       key: "resigned",
-      label: "Đã nghỉ",
+      label: `Đã nghỉ (${filteredResigned.length})`,
       children: (
         <Table
           columns={columnsResigned}

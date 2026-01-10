@@ -185,11 +185,11 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
             <Input placeholder="https://example.com/image.jpg" />
           </Form.Item>
 
-          <Form.Item label="Ngày bắt đầu" name="startAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const end = getFieldValue('endAt'); if (!value || !end) return Promise.resolve(); return end.isAfter(value, 'day') ? Promise.resolve() : Promise.reject(new Error('End date must be after start date')); } })]}>
+          <Form.Item label="Ngày bắt đầu" name="startAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const end = getFieldValue('endAt'); if (!value || !end) return Promise.resolve(); return end.isAfter(value, 'day') ? Promise.resolve() : Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu')); } })]}>
             <DatePicker className="w-full" placeholder="Chọn ngày bắt đầu" />
           </Form.Item>
 
-          <Form.Item label="Ngày kết thúc" name="endAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const start = getFieldValue('startAt'); if (!value || !start) return Promise.resolve(); return value.isAfter(start, 'day') ? Promise.resolve() : Promise.reject(new Error('End date must be after start date')); } })]}>
+          <Form.Item label="Ngày kết thúc" name="endAt" rules={[{ required: false }, ({ getFieldValue }) => ({ validator(_, value) { const start = getFieldValue('startAt'); if (!value || !start) return Promise.resolve(); return value.isAfter(start, 'day') ? Promise.resolve() : Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu')); } })]}>
             <DatePicker className="w-full" placeholder="Chọn ngày kết thúc" />
           </Form.Item>
 

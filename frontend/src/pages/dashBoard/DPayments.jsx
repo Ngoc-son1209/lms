@@ -48,7 +48,7 @@ function DPayments() {
 
   const columns = [
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       width: 120,
@@ -61,17 +61,17 @@ function DPayments() {
           <Tag color="red">FAILED</Tag>
         ),
     },
-    { title: "Course ID", dataIndex: "courseId", key: "courseId" },
-    { title: "User ID", dataIndex: "userId", key: "userId" },
+    { title: "ID khóa học", dataIndex: "courseId", key: "courseId" },
+    { title: "ID học viên", dataIndex: "userId", key: "userId" },
     {
-      title: "Amount (VND)",
+      title: "Tổng tiền (VND)",
       dataIndex: "amount",
       key: "amount",
       width: 140,
       render: (v) => (v != null ? Number(v).toLocaleString() : "-")
     },
     { title: "vnpTxnRef", dataIndex: "vnpTxnRef", key: "vnpTxnRef" },
-    { title: "Order Info", dataIndex: "orderInfo", key: "orderInfo" },
+    { title: "Thông tin hóa đơn", dataIndex: "orderInfo", key: "orderInfo" },
     {
       title: "",
       key: "action",
@@ -123,14 +123,14 @@ function DPayments() {
         width={820}
       >
         <Descriptions bordered size="small" column={2} loading={detailLoading}>
-          <Descriptions.Item label="Payment ID" span={2}>{detail?.id || "-"}</Descriptions.Item>
-          <Descriptions.Item label="Status">{detail?.status || "-"}</Descriptions.Item>
-          <Descriptions.Item label="Amount">{detail?.amount != null ? Number(detail.amount).toLocaleString() : "-"}</Descriptions.Item>
-          <Descriptions.Item label="Course">{detail?.courseName || detail?.courseId || "-"}</Descriptions.Item>
-          <Descriptions.Item label="User">{detail?.userName || detail?.userId || "-"}</Descriptions.Item>
-          <Descriptions.Item label="User Email" span={2}>{detail?.userEmail || "-"}</Descriptions.Item>
+          <Descriptions.Item label="ID khóa học" span={2}>{detail?.id || "-"}</Descriptions.Item>
+          <Descriptions.Item label="Trạng thái">{detail?.status || "-"}</Descriptions.Item>
+          <Descriptions.Item label="Tổng tiền">{detail?.amount != null ? Number(detail.amount).toLocaleString() : "-"}</Descriptions.Item>
+          <Descriptions.Item label="Khóa học">{detail?.courseName || detail?.courseId || "-"}</Descriptions.Item>
+          <Descriptions.Item label="Học viên">{detail?.userName || detail?.userId || "-"}</Descriptions.Item>
+          <Descriptions.Item label="Email học viên" span={2}>{detail?.userEmail || "-"}</Descriptions.Item>
           <Descriptions.Item label="vnpTxnRef" span={2}>{detail?.vnpTxnRef || "-"}</Descriptions.Item>
-          <Descriptions.Item label="Order Info" span={2}>{detail?.orderInfo || "-"}</Descriptions.Item>
+          <Descriptions.Item label="Thông tin hóa đơn" span={2}>{detail?.orderInfo || "-"}</Descriptions.Item>
         </Descriptions>
       </Modal>
     </div>

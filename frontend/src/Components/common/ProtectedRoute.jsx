@@ -7,8 +7,40 @@ export const AdminRoute = ({ children }) => {
 };
 
 export const UserRoute = ({ children }) => {
-  const isUser = authService.isUserAuthenticated();
-  return isUser ? children : <Navigate to="/login" replace />;
+  const user = authService.getCurrentUser();
+
+  // Chặn cứng: chỉ chặn ADMIN vào các màn của học viên.
+  // USER và INSTRUCTOR vẫn được vào.
+  if (!user?.token) return <Navigate to="/login" replace />;
+
+  if (user.role === "ROLE_ADMIN") {
+    return <Navigate to="/admin" replace />;
+  }
+
+
+  return children;
+};
+
+// Chặn riêng các màn chỉ dành cho HỌC VIÊN (không cho giảng viên vào)
+export const StudentOnlyRoute = ({ children }) => {
+  const user = authService.getCurrentUser();
+
+  if (!user?.token) return <Navigate to="/login" replace />;
+
+  if (user.role === "ROLE_ADMIN") {
+    return <Navigate to="/admin" replace />;
+  }
+
+  if (user.role === "ROLE_INSTRUCTOR") {
+    return <Navigate to="/instructor/courses" replace />;
+  }
+
+  // Chỉ cho học viên
+  if (user.role !== "ROLE_USER") {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 };
 
 export const InstructorRoute = ({ children }) => {
