@@ -75,7 +75,7 @@ public class WebSecurityConfig {
                         // Cho phép HỌC VIÊN + GIẢNG VIÊN truy cập (Admin bị chặn)
                         .requestMatchers("/api/assessments/**").hasAnyRole("USER", "INSTRUCTOR")
                         .requestMatchers("/api/enrollments/**").hasAnyRole("USER", "INSTRUCTOR")
-                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "INSTRUCTOR")
+                        .requestMatchers("/api/feedbacks/**").hasAnyRole("USER", "INSTRUCTOR", "ADMIN")
                         .requestMatchers("/api/learning/**").hasAnyRole("USER", "INSTRUCTOR")
                         .requestMatchers("/api/progress/**").hasAnyRole("USER", "INSTRUCTOR")
 

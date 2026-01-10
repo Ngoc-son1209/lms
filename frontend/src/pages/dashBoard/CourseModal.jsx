@@ -145,7 +145,7 @@ function CourseModal({ isOpen, onClose, onSuccess, courseId = null, mode = "add"
               min={0}
               step={0.01}
               formatter={(value) =>
-                `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               }
               parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
             />

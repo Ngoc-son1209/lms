@@ -197,10 +197,10 @@ function Courses() {
                       {course.course_name.length < 8 ? `${course.course_name} Tutorial` : course.course_name}
                     </h3>
 
-                    <p className="text-gray-500 text-sm mb-6 flex items-center">
+                    {/* <p className="text-gray-500 text-sm mb-6 flex items-center">
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                       by {course.instructor}
-                    </p>
+                    </p> */}
 
                     {enrolled.includes(course.course_id) ? (
                       <button
