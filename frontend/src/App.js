@@ -5,6 +5,7 @@ import Register from './pages/auth/register';
 // Import các component auth
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import VerifyStatus from './pages/auth/VerifyStatus';
 import Course from './pages/course/course';
 import Courses from './pages/course/Courses';
 import Profile from './pages/profile/profile';
@@ -49,6 +50,7 @@ function App() {
           <Route path='/register' Component={Register}></Route>
           <Route path='/forgot-password' Component={ForgotPassword}></Route>
           <Route path='/reset-password' Component={ResetPassword}></Route>
+          <Route path='/verify-status' Component={VerifyStatus}></Route>
 
           {/* ======================= Public & User Routes ======================= */}
           <Route path='/' element={<UserRoute><Home /></UserRoute>} />
