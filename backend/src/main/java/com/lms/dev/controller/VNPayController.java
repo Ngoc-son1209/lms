@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.lms.dev.entity.Payment;
+import com.lms.dev.repository.CourseRepository;
 import com.lms.dev.repository.PaymentRepository;
 import com.lms.dev.service.PaymentService;
 import com.lms.dev.service.VNPayService;
@@ -22,6 +23,9 @@ public class VNPayController {
     private PaymentRepository paymentRepo;
 
     @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
     private VNPaySignatureService vnPaySignatureService;
 
     @Autowired
@@ -32,7 +36,15 @@ public class VNPayController {
             throws Exception {
         // # NOTE: Giữ lại endpoint cũ để tương thích FE hiện tại.
         // Về sau nên migrate sang endpoint mới chỉ cần courseId và lấy userId từ JWT.
-        
+
+        // Chặn thanh toán nếu khóa học đã kết thúc
+        // Quy ước: nếu endAt != null và endAt < today => course ended
+        com.lms.dev.entity.Course course = courseRepository.findById(courseId).orElse(null);
+        if (course != null && course.getEndAt() != null
+                && course.getEndAt().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalStateException("Khóa học đã kết thúc, không thể thanh toán");
+        }
+
         String vnpTxnRef = String.valueOf(System.currentTimeMillis());
         String orderInfo = "Thanh toan khoa hoc " + courseId + " - " + vnpTxnRef;
 

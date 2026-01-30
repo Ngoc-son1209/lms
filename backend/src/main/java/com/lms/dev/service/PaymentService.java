@@ -52,6 +52,12 @@ public class PaymentService {
             throw new IllegalStateException("Bạn đã mua/đăng ký khóa học này rồi");
         }
 
+        // Chặn thanh toán nếu khóa học đã kết thúc
+        // Quy ước: nếu endAt != null và endAt < today => course ended
+        if (course.getEndAt() != null && course.getEndAt().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalStateException("Khóa học đã kết thúc, không thể thanh toán");
+        }
+
         // Chặn thanh toán nếu FULL
         courseAvailabilityService.refreshAndSave(course);
         if ("FULL".equalsIgnoreCase(course.getAvailabilityStatus())) {
